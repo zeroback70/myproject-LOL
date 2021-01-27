@@ -36,10 +36,10 @@ public class TierHandler {
       String tlevel = null;
       switch (tonefour[i]) {
         case 1:
-          tlevel = "모험실패";
+          tlevel = "1티어";
           break;
         case 2:
-          tlevel = "모험중";
+          tlevel = "2티어";
           break;
         case 3:
           tlevel = "3티어";

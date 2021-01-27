@@ -6,7 +6,7 @@ public class App {
 
 
     while(true){
-      System.out.println("명령어 = /user/add, /user/list, /champion/add, /champion/list, /tier/add, /tier/list");
+      System.out.println("명령어 = 유저등록, 유저명단, 챔피언등록, 챔피언명단, 티어등록, 티어명단");
       String command = Prompt.inputString("명령> ");
 
       if(command.equalsIgnoreCase("quit") || command.equalsIgnoreCase("exit")) {
@@ -14,27 +14,27 @@ public class App {
         System.out.println("사용해주셔서 감사합니다.");
         break;
 
-      }else if(command.equalsIgnoreCase("/user/add")) {
+      }else if(command.equalsIgnoreCase("유저등록")) {
         System.out.println();
         UserHandler.add();
 
-      }else if(command.equalsIgnoreCase("/user/list")) {
+      }else if(command.equalsIgnoreCase("유저명단")) {
         System.out.println();
         UserHandler.list();
 
-      }else if(command.equalsIgnoreCase("/champion/add")){
+      }else if(command.equalsIgnoreCase("챔피언등록")){
         System.out.println();
         ChampionHandler.add();
 
-      }else if(command.equalsIgnoreCase("/champion/list")) {
+      }else if(command.equalsIgnoreCase("챔피언명단")) {
         System.out.println();
         ChampionHandler.list();
 
-      }else if(command.equalsIgnoreCase("/tier/add")) {
+      }else if(command.equalsIgnoreCase("티어등록")) {
         System.out.println();
         TierHandler.add();
 
-      }else if(command.equalsIgnoreCase("/tier/list")) {
+      }else if(command.equalsIgnoreCase("티어명단")) {
         System.out.println();
         TierHandler.list();
 
