@@ -1,118 +1,129 @@
 package com.kyung.pms.handler;
 
 import com.kyung.pms.domain.Deliver;
+import com.kyung.util.List;
 import com.kyung.util.Prompt;
 
 public class DeliverHandler {
 
-  static final int LENGTH = 100;
+  private MemberHandler memberHandler;
+  private OrderHandler orderHandler;
 
-  Deliver[] Delivers = new Deliver[LENGTH];
-  int size = 0;
+  public List DeliverList = new List();
 
-  MemberHandler memberList;
+  public DeliverHandler(MemberHandler memberHandler, OrderHandler orderHandler) {
+    this.memberHandler = memberHandler;
+    this.orderHandler = orderHandler;
+  }
 
+  public void service() {
 
-  public DeliverHandler(MemberHandler memberHandler) {
-    this.memberList = memberHandler;
+    loop:
+      while(true) {
+        System.out.println("【토끼마켓 / 상품 배송】");
+        System.out.println("1. 등록하기");
+        System.out.println("2. 목록 보기");
+        System.out.println("3. 배송 상세 보기");
+        System.out.println("4. 수정하기");
+        System.out.println("5. 삭제하기");
+        System.out.println("0. 이전 메뉴로 돌아가기");
+        System.out.println("원하시는 번호를 눌러주세요!");
+        System.out.println();
+
+        String command = com.kyung.util.Prompt.inputString("명령> ");
+        System.out.println();
+
+        switch(command) {
+          case "1" :
+            this.add();
+            break;
+          case "2" :
+            this.list();
+            break;
+          case "3" :
+            this.detail();
+            break;
+          case "4" :
+            this.update();
+            break;
+          case "5" :
+            this.delete();
+            break;
+          case "0" :
+            System.out.println("이전 메뉴로 돌아갑니다.");
+            System.out.println();
+            break loop;
+          default :
+            System.out.println("번호를 잘못 입력하신것 같습니다. 0번부터 5번까지 다시 입력해주시겠어요?");
+            System.out.println();
+
+        }
+        System.out.println();
+      }
   }
 
   public void add() {
-    System.out.println("결제 완료! 배송 하기");
+    System.out.println("[상품 배송 > 등록]");
 
     Deliver s = new Deliver();
 
-    s.number = Prompt.promptInt("배송 번호: ");
+    s.setNumber(Prompt.inputInt("배송 번호: "));
 
-    while(true) {
-      String id = Prompt.promptString("회원 아이디(enter(취소)): ");
-      if(id.length() == 0) {
-        System.out.println("배송 등록을 취소합니다.");
-        return;
-      }else if(this.memberList.exist(id)) {
-        s.memberId = id;
-        break;
-      }
-      System.out.println("잘못된 아이디 입니다.");
+    s.setMemberId(memberHandler.inputMember("회원 아이디(enter(취소)): "));
+    if(s.getMemberId() == null) {
+      System.out.println("배송 등록을 취소합니다.");
+      System.out.println();
+      return;
     }
 
-    int number = -1;
-    while(true) {
-      number = Prompt.promptInt("주문 번호(-1(취소)): ");
-      if(number == -1) {
-        System.out.println("배송 등록을 취소합니다.");
-        System.out.println();
-        return;
-      }else{
-        s.newNumber = number;
-        break;
-      }
+    s.setOrderNumber(orderHandler.inputOrderNumber("주문 번호(-1(취소)): "));
+    if(s.getOrderNumber() == -1) {
+      System.out.println("배송 등록을 취소합니다.");
+      System.out.println();
+      return;
     }
-    s.tNumber = Prompt.promptInt("운송장 번호: ");
-    s.status = Prompt.promptInt("배송상태\n" + "0: 배송준비중\n" + "1: 배송중\n" + "2: 배송완료\n" + "> ");
-    s.manager = Prompt.promptString("배송 담당자: ");
 
-    this.Delivers[this.size++] = s;
+    s.setTrackingNumber(Prompt.inputInt("운송장 번호: "));
+    s.setStatus(Prompt.inputInt("배송상태\n" + "0: 배송준비중\n" + "1: 배송중\n" + "2: 배송완료\n" + "> "));
+    s.setManager(Prompt.inputString("배송 담당자: "));
+
+    DeliverList.add(s);
 
     System.out.println();
   }
 
   public void list() {
-    System.out.println("[배송 목록]");
+    System.out.println("[상품 배송 > 목록]");
 
-    for (int i = 0; i < this.size; i++) {
+    Object[] list = DeliverList.toArray();
+    for(Object obj : list) {
+      Deliver s = (Deliver)obj;
 
-      Deliver s = this.Delivers[i];
-
-      String statusLabel = null;
-
-      switch (s.status) {
-        case 0:
-          statusLabel = "배송 준비중";
-          break;
-        case 1: 
-          statusLabel = "배송중";
-          break;
-        case 2:
-          statusLabel = "배송 완료";
-          break;
-      }
-
-      System.out.printf("배송 번호: %d 고객 아이디: %s 주문 번호: %d\n운송장 번호: %d 배송상태: %s\n담당자: %s\n"
-          ,s.number, s.memberId, s.newNumber, s.tNumber, statusLabel, s.manager);
+      System.out.printf("배송 번호: %d 고객 아이디: %s\n운송장 번호: %d\n"
+          ,s.getNumber(), s.getMemberId(), s.getTrackingNumber());
       System.out.println("-----------------------------------------");
+
     }
     System.out.println();
   }
-  public void detail() {
-    System.out.println("[배송 상세보기]");
 
-    Deliver Deliver = findByNo(Prompt.promptInt("번호? "));
+  public void detail() {
+    System.out.println("[상품 배송 > 상세 보기]");
+
+    Deliver Deliver = findByNo(Prompt.inputInt("번호? "));
 
     if (Deliver == null) {
       System.out.println("해당 번호의 배송이 없습니다.");
       System.out.println();
     }else {
-      System.out.printf("고객 아이디: %s ", Deliver.memberId);
-      System.out.printf("주문 번호: %s\n", Deliver.newNumber);
-      System.out.printf("운송장 번호: %s\n", Deliver.tNumber);
+      System.out.printf("고객 아이디: %s ", Deliver.getMemberId());
+      System.out.printf("주문 번호: %s\n", Deliver.getOrderNumber());
+      System.out.printf("운송장 번호: %s\n", Deliver.getTrackingNumber());
 
-      String statusLabel = null;
-
-      switch (Deliver.status) {
-        case 0:
-          statusLabel = "배송 준비중";
-          break;
-        case 1: 
-          statusLabel = "배송중";
-          break;
-        case 2:
-          statusLabel = "배송 완료";
-          break;
-      }
+      String statusLabel = getStatusLabel(Deliver.getStatus());
 
       System.out.printf("배송 상태: %s ", statusLabel);
-      System.out.printf("담당자: %s\n", Deliver.manager);
+      System.out.printf("담당자: %s\n", Deliver.getManager());
       System.out.println("-------------------------------------------------------------");
       return;
 
@@ -120,9 +131,9 @@ public class DeliverHandler {
   }
 
   public void update() {
-    System.out.println("[배송 정보 수정]");
+    System.out.println("[상품 배송 > 수정]");
 
-    Deliver Deliver = findByNo(Prompt.promptInt("번호? "));
+    Deliver Deliver = findByNo(Prompt.inputInt("번호? "));
     if(Deliver == null) {
 
       System.out.println("해당 번호의 배송이 없습니다.");
@@ -130,46 +141,34 @@ public class DeliverHandler {
 
     }else {
 
-      String memberId = "";
-      while(true) {
-        memberId = Prompt.promptString(String.format("고객아이디(%s)(enter(취소))? ",Deliver.memberId));
-        if(memberId.length() == 0) {
-          System.out.println("배송 등록을 취소합니다.");
-          System.out.println();
-          return;
-        }else if(this.memberList.exist(memberId)) {
-          break;
-        }
-        System.out.println("잘못된 아이디 입니다.");
+      String memberId = memberHandler.inputMember(String.format("고객아이디(%s)(enter(취소))? ",Deliver.getMemberId()));
+      if(memberId == null) {
+        System.out.println("배송 등록을 취소합니다.");
+        System.out.println();
       }
 
-      int orderNumber = -1;
-      while(true) {
-        orderNumber = Prompt.promptInt(String.format("주문 번호(%s)(-1(취소))? ",Deliver.newNumber));
-        if(orderNumber == -1) {
-          System.out.println("배송 등록을 취소합니다.");
-          System.out.println();
-          return;
-        }else{
-          Deliver.newNumber = orderNumber;
-          break;
-        }
+      int orderNumber = orderHandler.inputOrderNumber(String.format("주문 번호(%s)(-1(취소))? ",Deliver.getOrderNumber()));
+      if(orderNumber == -1) {
+        System.out.println("배송 등록을 취소합니다.");
+        System.out.println();
+        return;
       }
 
-      int trackingNumber = Prompt.promptInt(String.format("운송장번호(%s)? ",Deliver.tNumber));
+      int trackingNumber = Prompt.inputInt(String.format("운송장번호(%s)? ",Deliver.getTrackingNumber()));
 
-      int status =  Prompt.promptInt(String.format("0: 배송준비중\n"+ "1: 배송중\n" + "2: 배송완료\n" + "배송상태(%s)? ",Deliver.tNumber));
+      int status =  Prompt.inputInt(String.format
+          ("0: 배송준비중\n"+ "1: 배송중\n" + "2: 배송완료\n" + "배송상태(%s)? ",getStatusLabel(Deliver.getStatus())));
 
-      String manager = Prompt.promptString(String.format("담당자(%s)? ",Deliver.manager));
+      String manager = Prompt.inputString(String.format("담당자(%s)? ",Deliver.getManager()));
 
 
-      String userChoice = Prompt.promptString("정말 수정하시겠습니까?(y/N) ");
+      String userChoice = Prompt.inputString("정말 수정하시겠습니까?(y/N) ");
       if(userChoice.equalsIgnoreCase("y")) {
-        Deliver.memberId = memberId;
-        Deliver.newNumber = orderNumber;
-        Deliver.tNumber = trackingNumber;
-        Deliver.status = status;
-        Deliver.manager = manager;
+        Deliver.setMemberId(memberId);
+        Deliver.setOrderNumber(orderNumber);
+        Deliver.setTrackingNumber(trackingNumber);
+        Deliver.setStatus(status);
+        Deliver.setManager(manager);
         System.out.println("게시물 수정이 완료되었습니다.");
         System.out.println();
       }else {
@@ -182,23 +181,20 @@ public class DeliverHandler {
 
 
   public void delete() {
-    System.out.println("[배송 삭제]");
+    System.out.println("[상품 배송 > 삭제]");
 
-    int index = indexOf(Prompt.promptInt("번호? "));
-    if(index == -1) {
+    int no = Prompt.inputInt("번호? ");
+    Deliver Deliver = findByNo(no);
+    if(Deliver == null) {
       System.out.println("해당 번호의 배송이 없습니다.");
       System.out.println();
 
     }else {
-      String userChoice = Prompt.promptString("정말 삭제하시겠습니까?(y/N) ");
+      String userChoice = Prompt.inputString("정말 삭제하시겠습니까?(y/N) ");
 
       if(userChoice.equalsIgnoreCase("y")) {
 
-        for(int x = index + 1; x < this.size; x++) {
-
-          Delivers[x - 1] = Delivers[x];
-        }
-        this.Delivers[--this.size] = null;
+        DeliverList.delete(Deliver);
         System.out.println("배송 삭제가 완료되었습니다.");
         System.out.println();
         return;
@@ -211,23 +207,26 @@ public class DeliverHandler {
     }
   }
 
+  String getStatusLabel(int status) {
+    switch (status) {
+      case 1:
+        return "배송중";
+      case 2: 
+        return "배송 완료";
+      default:
+        return "배송 준비중";
+    }
+  }
 
-  int indexOf(int DeliverNo) {
-    for(int i = 0; i < this.size; i++) {
-      Deliver Deliver = this.Delivers[i];
-      if(DeliverNo == Deliver.number) {
-        return i;
+  private Deliver findByNo(int DeliverNo) {
+    Object[] list = DeliverList.toArray();
+    for(Object obj : list) {
+      Deliver s = (Deliver)obj;
+      if(s.getNumber() == DeliverNo) {
+        return s;
       }
     }
-    return -1;
+    return null;
   }
 
-  Deliver findByNo(int DeliverNo) {
-    int i = indexOf(DeliverNo);
-    if(i == -1) {
-      return null;
-    }else {
-      return this.Delivers[i];
-    }
-  }
 }
