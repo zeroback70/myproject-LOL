@@ -4,11 +4,11 @@ import com.kyung.pms.domain.Useditem;
 import com.kyung.util.List;
 import com.kyung.util.Prompt;
 
-public class UseditemHandler {
+public class UseditemHandler<E> {
 
-  private List UseditemList = new List();
+  private List<E> UseditemList = new List<>();
 
-  public List getUseditemList(List UseditemList) {
+  public List<E> getUseditemList(List<E> UseditemList) {
     return this.UseditemList;
   }
 

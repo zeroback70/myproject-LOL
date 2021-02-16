@@ -5,18 +5,18 @@ import com.kyung.pms.domain.Order;
 import com.kyung.util.List;
 import com.kyung.util.Prompt;
 
-public class OrderHandler {
+public class OrderHandler<E> {
 
-  private MemberHandler memberHandler;
-  private UseditemHandler UseditemHandler;
+  private MemberHandler<E> memberHandler;
+  private UseditemHandler<E> UseditemHandler;
 
-  private List orderList = new List();
+  private List<E> orderList = new List<>();
 
-  public List getOrderList(List orderList) {
+  public List<E> getOrderList(List<E> orderList) {
     return this.orderList;
   }
 
-  public OrderHandler(MemberHandler memberHandler, UseditemHandler UseditemHandler){
+  public OrderHandler(MemberHandler<E> memberHandler, UseditemHandler<E> UseditemHandler){
     this.memberHandler = memberHandler;
     this.UseditemHandler = UseditemHandler;
   }

@@ -4,14 +4,14 @@ import com.kyung.pms.domain.Deliver;
 import com.kyung.util.List;
 import com.kyung.util.Prompt;
 
-public class DeliverHandler {
+public class DeliverHandler<E> {
 
-  private MemberHandler memberHandler;
-  private OrderHandler orderHandler;
+  private MemberHandler<E> memberHandler;
+  private OrderHandler<E> orderHandler;
 
-  public List DeliverList = new List();
+  public List<E> DeliverList = new List<>();
 
-  public DeliverHandler(MemberHandler memberHandler, OrderHandler orderHandler) {
+  public DeliverHandler(MemberHandler<E> memberHandler, OrderHandler<E> orderHandler) {
     this.memberHandler = memberHandler;
     this.orderHandler = orderHandler;
   }

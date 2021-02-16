@@ -5,11 +5,11 @@ import com.kyung.pms.domain.Member;
 import com.kyung.util.List;
 import com.kyung.util.Prompt;
 
-public class MemberHandler {
+public class MemberHandler<E> {
 
-  private List memberList = new List();
+  private List<E> memberList = new List<>();
 
-  public List getMemberList() {
+  public List<E> getMemberList() {
     return this.memberList;
   }
 

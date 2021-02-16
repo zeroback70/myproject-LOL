@@ -10,20 +10,20 @@ import com.kyung.util.Stack;
 
 public class App {
 
-  static BoardHandler BoardUseditem = new BoardHandler();
-  static BoardHandler BoardDeliver = new BoardHandler();
-  static BoardHandler BoardExchangeReturn = new BoardHandler();
-  static BoardHandler BoardReview = new BoardHandler();
+  static BoardHandler<E> BoardUseditem = new BoardHandler<>();
+  static BoardHandler<E> BoardDeliver = new BoardHandler<>();
+  static BoardHandler<E> BoardExchangeReturn = new BoardHandler<>();
+  static BoardHandler<E> BoardReview = new BoardHandler<>();
 
-  static Stack commandStack = new Stack();
+  static Stack<E> commandStack = new Stack<>();
 
   public static void main(String[] args) {
 
 
-    MemberHandler memberHandler = new MemberHandler();
-    UseditemHandler UseditemHandler = new UseditemHandler();
-    OrderHandler orderHandler = new OrderHandler(memberHandler, UseditemHandler);
-    DeliverHandler DeliverHandler = new DeliverHandler(memberHandler, orderHandler);
+    MemberHandler<E> memberHandler = new MemberHandler<>();
+    UseditemHandler<E> UseditemHandler = new UseditemHandler<>();
+    OrderHandler<E> orderHandler = new OrderHandler<>(memberHandler, UseditemHandler);
+    DeliverHandler<E> DeliverHandler = new DeliverHandler<>(memberHandler, orderHandler);
 
     loop: 
       while(true) {

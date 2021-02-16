@@ -1,14 +1,17 @@
 package com.kyung.util;
 
-public class Stack extends List{
+public class Stack<E> extends List<E>{
 
-    public Object push(Object item) {
-      this.add(item);
-      return item;
+    public E push(E command) {
+      this.add(command);
+      return command;
     }
   
-    public Object pop() {
-      Object obj = this.delete(this.size - 1);
+    public E pop() {
+      E obj = this.delete(this.size - 1);
       return obj;
     }
+
+	public void push(String command) {
+	}
   }

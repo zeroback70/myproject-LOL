@@ -6,11 +6,12 @@ import com.kyung.pms.domain.Board;
 import com.kyung.util.List;
 import com.kyung.util.Prompt;
 
-public class BoardHandler {
+public class BoardHandler<E> {
 
-  private List boardList = new List();
+  private List<E> boardList = new List<>();
 
-  public List getBoardList(List boardList) {
+
+  public List<E> getBoardList(List<E> boardList) {
     return this.boardList;
   }
 
