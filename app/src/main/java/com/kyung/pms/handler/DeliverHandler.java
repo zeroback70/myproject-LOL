@@ -1,7 +1,8 @@
 package com.kyung.pms.handler;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import com.kyung.pms.domain.Deliver;
-import com.kyung.util.List;
 import com.kyung.util.Prompt;
 
 public class DeliverHandler<E> {
@@ -9,30 +10,30 @@ public class DeliverHandler<E> {
   private MemberHandler<E> memberHandler;
   private OrderHandler<E> orderHandler;
 
-  public List<E> DeliverList = new List<>();
+  public ArrayList<Deliver> DeliverList = new ArrayList<>();
 
   public DeliverHandler(MemberHandler<E> memberHandler, OrderHandler<E> orderHandler) {
     this.memberHandler = memberHandler;
     this.orderHandler = orderHandler;
   }
 
-  public void service() {
+  public void service() throws CloneNotSupportedException{
 
     loop:
       while(true) {
         System.out.println("【토끼마켓 / 상품 배송】");
-        System.out.println("1. 등록하기");
-        System.out.println("2. 목록 보기");
+        System.out.println("1. 배송 등록하기");
+        System.out.println("2. 배송 목록 보기");
         System.out.println("3. 배송 상세 보기");
-        System.out.println("4. 수정하기");
-        System.out.println("5. 삭제하기");
+        System.out.println("4. 배송 수정하기");
+        System.out.println("5. 배송 취소하기");
         System.out.println("0. 이전 메뉴로 돌아가기");
         System.out.println("원하시는 번호를 눌러주세요!");
         System.out.println();
 
         String command = com.kyung.util.Prompt.inputString("명령> ");
         System.out.println();
-
+        try {
         switch(command) {
           case "1" :
             this.add();
@@ -56,14 +57,18 @@ public class DeliverHandler<E> {
           default :
             System.out.println("번호를 잘못 입력하신것 같습니다. 0번부터 5번까지 다시 입력해주시겠어요?");
             System.out.println();
-
+          }
+        } catch(Exception e) {
+          System.out.println("------------------------------------------------------------------------------");
+          System.out.printf("명령어 실행 중 오류 발생: %s - %s\n", e.getClass().getName(), e.getMessage());
+          System.out.println("------------------------------------------------------------------------------");
         }
         System.out.println();
       }
   }
 
   public void add() {
-    System.out.println("[상품 배송 > 등록]");
+    System.out.println("【토끼마켓 / 상품 배송 / 배송 등록하기】");
 
     Deliver s = new Deliver();
 
@@ -92,12 +97,13 @@ public class DeliverHandler<E> {
     System.out.println();
   }
 
-  public void list() {
-    System.out.println("[상품 배송 > 목록]");
+  public void list() throws CloneNotSupportedException{
+    System.out.println("【토끼마켓 / 상품 배송 / 배송 목록 보기】");
 
-    Object[] list = DeliverList.toArray();
-    for(Object obj : list) {
-      Deliver s = (Deliver)obj;
+    Iterator<Deliver> iterator = DeliverList.iterator();
+
+    while (iterator.hasNext()) {
+      Deliver s = iterator.next();
 
       System.out.printf("배송 번호: %d 고객 아이디: %s\n운송장 번호: %d\n"
           ,s.getNumber(), s.getMemberId(), s.getTrackingNumber());
@@ -108,7 +114,7 @@ public class DeliverHandler<E> {
   }
 
   public void detail() {
-    System.out.println("[상품 배송 > 상세 보기]");
+    System.out.println("【토끼마켓 / 상품 배송 / 배송 상세 보기】");
 
     Deliver Deliver = findByNo(Prompt.inputInt("번호? "));
 
@@ -131,7 +137,7 @@ public class DeliverHandler<E> {
   }
 
   public void update() {
-    System.out.println("[상품 배송 > 수정]");
+    System.out.println("【토끼마켓 / 상품 배송 / 배송 수정하기】");
 
     Deliver Deliver = findByNo(Prompt.inputInt("번호? "));
     if(Deliver == null) {
@@ -162,8 +168,8 @@ public class DeliverHandler<E> {
       String manager = Prompt.inputString(String.format("담당자(%s)? ",Deliver.getManager()));
 
 
-      String userChoice = Prompt.inputString("정말 수정하시겠습니까?(y/N) ");
-      if(userChoice.equalsIgnoreCase("y")) {
+      String userChoice = Prompt.inputString("정말 수정하시겠습니까?(Y/N) ");
+      if(userChoice.equalsIgnoreCase("Y")) {
         Deliver.setMemberId(memberId);
         Deliver.setOrderNumber(orderNumber);
         Deliver.setTrackingNumber(trackingNumber);
@@ -181,7 +187,7 @@ public class DeliverHandler<E> {
 
 
   public void delete() {
-    System.out.println("[상품 배송 > 삭제]");
+    System.out.println("【토끼마켓 / 상품 배송 / 배송 취소하기】");
 
     int no = Prompt.inputInt("번호? ");
     Deliver Deliver = findByNo(no);
@@ -190,16 +196,14 @@ public class DeliverHandler<E> {
       System.out.println();
 
     }else {
-      String userChoice = Prompt.inputString("정말 삭제하시겠습니까?(y/N) ");
+      String userChoice = Prompt.inputString("정말 삭제하시겠습니까?(Y/N) ");
 
-      if(userChoice.equalsIgnoreCase("y")) {
-
-        DeliverList.delete(Deliver);
+      if(userChoice.equalsIgnoreCase("Y")) {
+        DeliverList.remove(Deliver);
         System.out.println("배송 삭제가 완료되었습니다.");
         System.out.println();
         return;
       }else {
-
         System.out.println("배송 삭제를 취소하였습니다.");
         System.out.println();
         return;
@@ -219,9 +223,8 @@ public class DeliverHandler<E> {
   }
 
   private Deliver findByNo(int DeliverNo) {
-    Object[] list = DeliverList.toArray();
-    for(Object obj : list) {
-      Deliver s = (Deliver)obj;
+    Deliver[] list = DeliverList.toArray(new Deliver[DeliverList.size()]);
+    for(Deliver s : list) {
       if(s.getNumber() == DeliverNo) {
         return s;
       }

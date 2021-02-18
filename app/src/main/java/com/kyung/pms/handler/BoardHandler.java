@@ -1,25 +1,20 @@
 package com.kyung.pms.handler;
 
 import java.sql.Date;
+import java.util.Iterator;
+import java.util.ArrayList;
 import com.kyung.pms.App;
 import com.kyung.pms.domain.Board;
-import com.kyung.util.List;
 import com.kyung.util.Prompt;
 
 public class BoardHandler<E> {
 
-  private List<E> boardList = new List<>();
+  private ArrayList<Board> boardList = new ArrayList<>();
 
+  public void service(String number1) throws CloneNotSupportedException{
 
-  public List<E> getBoardList(List<E> boardList) {
-    return this.boardList;
-  }
-
-  public void service(String choice) {
-
-    loop:
       while(true) {
-        System.out.printf("【토끼마켓 / 토끼들 게시판 / %s】\n", choice);
+        System.out.printf("【토끼마켓 / 토끼들 게시판 / %s】\n", number1);
         System.out.println("1. 게시물 등록하기");
         System.out.println("2. 게시물 목록보기");
         System.out.println("3. 상세하게 보기");
@@ -32,33 +27,40 @@ public class BoardHandler<E> {
         String command = com.kyung.util.Prompt.inputString("번호입력(0~5)>> ");
         System.out.println();
 
-        switch(command) {
-          case "1" :
-            this.add();
-            break;
-          case "2" :
-            this.list();
-            break;
-          case "3" :
-            this.detail();
-            break;
-          case "4" :
-            this.update();
-            break;
-          case "5" :
-            this.delete();
-            break;
-          case "0" :
-            System.out.println("이전 메뉴로 돌아갑니다.");
-            System.out.println();
-            App.chooseBoard();
-          default :
-            System.out.println("번호를 잘못 입력하신것 같습니다. 0번부터 5번까지 다시 입력해주시겠어요?");
-            System.out.println();
+        try {
+          switch(command) {
+            case "1" :
+              this.add();
+              break;
+            case "2" :
+              this.list();
+              break;
+            case "3" :
+              this.detail();
+              break;
+            case "4" :
+              this.update();
+              break;
+            case "5" :
+              this.delete();
+              break;
+            case "0" :
+              System.out.println("게시판으로 돌아갑니다.");
+              System.out.println();
+              App.chooseBoard();
+            default :
+              System.out.println("잘못된 메뉴 번호 입니다.");
+              System.out.println();
+  
+          }
+        }catch(Exception e) {
+          System.out.println("------------------------------------------------------------------------------");
+          System.out.printf("명령어 실행 중 오류 발생: %s - %s\n", e.getClass().getName(), e.getMessage());
+          System.out.println("------------------------------------------------------------------------------");
         }
         System.out.println();
       }
-  }
+    }
 
   public void add() {
     System.out.println("[토끼들 게시판 > 새 게시글 등록]");
@@ -77,13 +79,13 @@ public class BoardHandler<E> {
     System.out.println();
   }
 
-  public void list() {
+  public void list() throws CloneNotSupportedException{
     System.out.println("[토끼들 게시판 > 게시글 목록]");
 
-    Object[] list = boardList.toArray();
+    Iterator<Board> iterator = boardList.iterator();
 
-    for(Object obj : list) {
-      Board b = (Board)obj;
+    while(iterator.hasNext()) {
+      Board b = iterator.next();
 
       System.out.printf("번호: %d 제목: %s 작성자: %s 등록일: %s\n조회수: %d 좋아요: %d\n",
           b.getNumber(), b.getTitle(), b.getWriter(), b.getRegisteredDate(), b.getViewCount(), b.getLike());
@@ -113,7 +115,7 @@ public class BoardHandler<E> {
   }
 
   public void update() {
-    System.out.println("[토끼들 게시판 > 게시글 수정하기]");
+    System.out.println("[게시글 수정하기]");
 
     Board board = findByNo(Prompt.inputInt("번호? "));
     if(board == null) {
@@ -125,8 +127,8 @@ public class BoardHandler<E> {
       String title = Prompt.inputString(String.format("제목(%s)? ",board.getTitle()));
       String content = Prompt.inputString(String.format("내용(%s)? ",board.getContent()));
 
-      String userChoice = Prompt.inputString("정말 수정하시겠습니까?(y/N) ");
-      if(userChoice.equalsIgnoreCase("y")) {
+      String usernumber1 = Prompt.inputString("정말 수정하시겠습니까?(y/N) ");
+      if(usernumber1.equalsIgnoreCase("y")) {
         board.setTitle(title);
         board.setContent(content);
         Date reRegisteredDate = new Date(System.currentTimeMillis());
@@ -142,7 +144,7 @@ public class BoardHandler<E> {
   }
 
   public void delete() {
-    System.out.println("[토끼들 게시판 > 게시글 삭제]");
+    System.out.println("[게시글 삭제]");
 
     int no = Prompt.inputInt("번호? ");
     Board board = findByNo(no);
@@ -151,17 +153,15 @@ public class BoardHandler<E> {
       System.out.println();
 
     }else {
-      String userChoice = Prompt.inputString("정말 삭제하시겠습니까?(y/N) ");
+      String usernumber1 = Prompt.inputString("정말 삭제하시겠습니까?(Y/N) ");
 
-      if(userChoice.equalsIgnoreCase("y")) {
-
-        boardList.delete(board);
+      if(usernumber1.equalsIgnoreCase("Y")) {
+        boardList.remove(board);
 
         System.out.println("게시글을 삭제하였습니다.");
         System.out.println();
 
       }else {
-
         System.out.println("게시글 삭제를 취소하였습니다.");
         System.out.println();
         return;
@@ -169,11 +169,9 @@ public class BoardHandler<E> {
     }
   }
 
-
   private Board findByNo(int boardNo) {
-    Object[] list = boardList.toArray();
-    for(Object obj : list) {
-      Board b = (Board)obj;
+    Board[] list = boardList.toArray(new Board[boardList.size()]);
+    for(Board b : list) {
       if(b.getNumber() == boardNo) {
         return b;
       }

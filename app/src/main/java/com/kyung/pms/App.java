@@ -1,29 +1,32 @@
 package com.kyung.pms;
 
+import java.util.ArrayDeque;
+import java.util.Iterator;
+import java.util.LinkedList;
 import com.kyung.pms.handler.BoardHandler;
 import com.kyung.pms.handler.MemberHandler;
 import com.kyung.pms.handler.OrderHandler;
 import com.kyung.pms.handler.UseditemHandler;
 import com.kyung.pms.handler.DeliverHandler;
 import com.kyung.util.Prompt;
-import com.kyung.util.Stack;
+
 
 public class App {
 
-  static BoardHandler<E> BoardUseditem = new BoardHandler<>();
-  static BoardHandler<E> BoardDeliver = new BoardHandler<>();
-  static BoardHandler<E> BoardExchangeReturn = new BoardHandler<>();
-  static BoardHandler<E> BoardReview = new BoardHandler<>();
+  static BoardHandler<String> BoardUseditem = new BoardHandler<>();
+  static BoardHandler<String> BoardDeliver = new BoardHandler<>();
+  static BoardHandler<String> BoardExchangeReturn = new BoardHandler<>();
+  static BoardHandler<String> BoardReview = new BoardHandler<>();
 
-  static Stack<E> commandStack = new Stack<>();
+  static ArrayDeque<String> commandStack = new ArrayDeque<>();
+  static LinkedList<String> commandQueue = new LinkedList<>();
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws CloneNotSupportedException{
 
-
-    MemberHandler<E> memberHandler = new MemberHandler<>();
-    UseditemHandler<E> UseditemHandler = new UseditemHandler<>();
-    OrderHandler<E> orderHandler = new OrderHandler<>(memberHandler, UseditemHandler);
-    DeliverHandler<E> DeliverHandler = new DeliverHandler<>(memberHandler, orderHandler);
+    MemberHandler<String> memberHandler = new MemberHandler<>();
+    UseditemHandler<String> UseditemHandler = new UseditemHandler<>();
+    OrderHandler<String> orderHandler = new OrderHandler<>(memberHandler, UseditemHandler);
+    DeliverHandler<String> DeliverHandler = new DeliverHandler<>(memberHandler, orderHandler);
 
     loop: 
       while(true) {
@@ -41,11 +44,12 @@ public class App {
         System.out.println();
 
         commandStack.push(command);
+        commandQueue.offer(command);
 
         switch(command) {
 
           case "1" :
-            memberHandler.service();
+            memberHandler.service(command);
             break;
 
           case "2" :
@@ -68,6 +72,16 @@ public class App {
             System.out.println("이용해주셔서 감사합니다.\n 더 나은 서비스로 보답하겠습니다.");
             break loop;
 
+          case "history" : 
+            printCommandHistory(commandStack.iterator());
+            System.out.println();
+            break;
+
+          case "history2" : 
+            printCommandHistory(commandQueue.iterator());
+            System.out.println();
+            break;
+
           default :
             System.out.println("번호를 잘못 입력하신것 같습니다. 0번부터 5번까지 다시 입력해주시겠어요?");
             System.out.println();
@@ -76,14 +90,15 @@ public class App {
       }
   }
 
-  public static void chooseBoard() {
+  public static void chooseBoard() throws CloneNotSupportedException{
+
     loop:
       while(true) {
         System.out.println("[메인 > 게시판]");
-        System.out.println("1. 상품 문의");
-        System.out.println("2. 배송 문의");
-        System.out.println("3. 교환/반품 문의");
-        System.out.println("4. 리뷰");
+        System.out.println("1. 상품 문의하기");
+        System.out.println("2. 배송 문의하기");
+        System.out.println("3. 교환/반품 문의하기");
+        System.out.println("4. 리뷰 남기기");
         System.out.println("0. 이전 메뉴");
         System.out.println();
 
@@ -92,25 +107,41 @@ public class App {
 
         switch(command) {
           case "1" :
-            BoardUseditem.service("상품 문의");
+            BoardUseditem.service("상품 문의하기");
 
           case "2" :
-            BoardDeliver.service("배송 문의");
+            BoardDeliver.service("배송 문의하기");
 
           case "3" :
-            BoardExchangeReturn.service("교환/반품 문의");
+            BoardExchangeReturn.service("교환/반품 문의하기");
 
           case "4" :
-            BoardReview.service("리뷰");
+            BoardReview.service("리뷰 남기기");
 
           case "0" :
-            System.out.println("메인으로 돌아갑니다.");
+            System.out.println("전화면으로 돌아갑니다!");
             break loop;
+
           default :
-            System.out.println("잘못된 메뉴 번호 입니다.");
+            System.out.println("잘못된 메뉴 번호 입니다! 다시 입력해 주시겠어요?");
 
         }
         System.out.println();
       }
   }
+  private static void printCommandHistory(Iterator<String> iterator) {
+
+    int count = 0;
+    while(iterator.hasNext()) {
+      System.out.println(iterator.next());
+      if(++count % 5 == 0) {
+        String input = Prompt.inputString(": ");
+        if(input.equalsIgnoreCase("q")) {
+          break;
+        }
+
+      }
+    }
+  }
+
 }

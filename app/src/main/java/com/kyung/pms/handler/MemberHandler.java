@@ -1,21 +1,18 @@
 package com.kyung.pms.handler;
 
 import java.sql.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
 import com.kyung.pms.domain.Member;
-import com.kyung.util.List;
 import com.kyung.util.Prompt;
 
 public class MemberHandler<E> {
 
-  private List<E> memberList = new List<>();
+  private LinkedList<Member> memberList = new LinkedList<>();
 
-  public List<E> getMemberList() {
-    return this.memberList;
-  }
+  public void service(String number1) throws CloneNotSupportedException {
 
-  public void service() {
-
-    loop:
+    loop: 
       while(true) {
         System.out.println("【토끼마켓 / 회원정보】");
         System.out.println("1. 회원가입");
@@ -27,9 +24,9 @@ public class MemberHandler<E> {
         System.out.println("원하시는 번호를 눌러주세요!");
         System.out.println();
 
-        String command = com.kyung.util.Prompt.inputString("번호입력(0~5)>> ");
+        String command = com.kyung.util.Prompt.inputString("번호 입력>> ");
         System.out.println();
-
+        try {
         switch(command) {
           case "1" :
             this.add();
@@ -53,14 +50,18 @@ public class MemberHandler<E> {
           default :
             System.out.println("번호를 잘못 입력하신것 같습니다. 0번부터 5번까지 다시 입력해주시겠어요?");
             System.out.println();
-
         }
-        System.out.println();
+      }catch(Exception e) {
+        System.out.println("------------------------------------------------------------------------------");
+        System.out.printf("명령어 실행 중 오류 발생: %s - %s\n", e.getClass().getName(), e.getMessage());
+        System.out.println("------------------------------------------------------------------------------");
       }
+      System.out.println();
+    }
   }
 
   public void add(){
-    System.out.println("[회원정보 > 등록]");
+    System.out.println("【토끼마켓 / 회원정보 / 회원가입]");
     Member m = new Member();
 
     m.setNumber(Prompt.inputInt("회원 번호: "));
@@ -79,13 +80,13 @@ public class MemberHandler<E> {
 
   }
 
-  public void list() {
-    System.out.println("[회원 목록]");
+  public void list() throws CloneNotSupportedException{
+    System.out.println("【토끼마켓 / 회원정보 / 회원목록】");
 
-    Object[] list = memberList.toArray();
+    Iterator<Member> iterator = memberList.iterator();
 
-    for(Object obj : list) {
-      Member m = (Member)obj;
+    while (iterator.hasNext()) {
+      Member m = iterator.next();
 
       System.out.printf("번호: %d 아이디: %s 이름: %s\n가입 날짜: %s\n"
           ,m.getNumber(), m.getId(), m.getName(), m.getJoinDate());
@@ -96,9 +97,8 @@ public class MemberHandler<E> {
     System.out.println();
   }
 
-
   public void detail() {
-    System.out.println("[회원정보 > 정보]");
+    System.out.println("【토끼마켓 / 회원정보 / 회원 상세 보기】");
 
     Member member = findByNo(Prompt.inputInt("번호? "));
 
@@ -115,21 +115,18 @@ public class MemberHandler<E> {
       System.out.printf("가입 날짜: %s\n", member.getJoinDate());
       System.out.println("-------------------------------------------------------------");
       return;
-
     }
   }
 
   public void update() {
-    System.out.println("[회원정보 > 수정]");
+    System.out.println("【토끼마켓 / 회원정보 / 회원 수정하기】");
 
     Member member = findByNo(Prompt.inputInt("번호? "));
     if(member == null) {
-
       System.out.println("해당 번호의 게시글이 없습니다.");
       System.out.println();
 
     }else {
-
       String name = Prompt.inputString(String.format("이름(%s)? ",member.getName()));
       String id = Prompt.inputString(String.format("아이디(%s)? ",member.getId()));
       String tel = Prompt.inputString(String.format("전화번호(%s)? ",member.getTel()));
@@ -156,7 +153,7 @@ public class MemberHandler<E> {
 
 
   public void delete() {
-    System.out.println("[회원정보 > 삭제]");
+    System.out.println("【토끼마켓 / 회원정보 / 회원 삭제하기】");
 
     int no = Prompt.inputInt("번호? ");
     Member member = findByNo(no);
@@ -165,11 +162,11 @@ public class MemberHandler<E> {
       System.out.println();
 
     }else {
-      String userChoice = Prompt.inputString("정말 삭제하시겠습니까?(y/N) ");
+      String userChoice = Prompt.inputString("정말 삭제하시겠습니까?(Y/N) ");
 
-      if(userChoice.equalsIgnoreCase("y")) {
+      if(userChoice.equalsIgnoreCase("Y")) {
 
-        memberList.delete(member);
+        memberList.remove(member);
 
         System.out.println("회원 정보 삭제를 완료하였습니다.");
         System.out.println();
@@ -208,9 +205,8 @@ public class MemberHandler<E> {
   }
 
   private Member findByNo(int memberNo) {
-    Object[] list = memberList.toArray();
-    for(Object obj : list) {
-      Member m = (Member)obj;
+    Member[] list = memberList.toArray(new Member[memberList.size()]);
+    for(Member m : list) {
       if(m.getNumber() == memberNo) {
         return m;
       }
@@ -219,9 +215,8 @@ public class MemberHandler<E> {
   }
 
   private Member findById(String id) {
-    Object[] list = memberList.toArray();
-    for(Object obj : list) {
-      Member m = (Member)obj;
+    Member[] list = memberList.toArray(new Member[memberList.size()]);
+    for(Member m : list) {
       if(m.getId().equals(id)) {
         return m;
       }

@@ -1,8 +1,9 @@
 package com.kyung.pms.handler;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Iterator;
 import com.kyung.pms.domain.Order;
-import com.kyung.util.List;
 import com.kyung.util.Prompt;
 
 public class OrderHandler<E> {
@@ -10,18 +11,14 @@ public class OrderHandler<E> {
   private MemberHandler<E> memberHandler;
   private UseditemHandler<E> UseditemHandler;
 
-  private List<E> orderList = new List<>();
-
-  public List<E> getOrderList(List<E> orderList) {
-    return this.orderList;
-  }
+  private ArrayList<Order> orderList = new ArrayList<>();
 
   public OrderHandler(MemberHandler<E> memberHandler, UseditemHandler<E> UseditemHandler){
     this.memberHandler = memberHandler;
     this.UseditemHandler = UseditemHandler;
   }
 
-  public void service() {
+  public void service() throws CloneNotSupportedException{
 
     loop:
       while(true) {
@@ -37,7 +34,7 @@ public class OrderHandler<E> {
 
         String command = com.kyung.util.Prompt.inputString("번호입력(0~5)>> ");
         System.out.println();
-
+        try {
         switch(command) {
           case "1" :
             this.add();
@@ -63,13 +60,18 @@ public class OrderHandler<E> {
             System.out.println();
 
         }
+      }catch(Exception e){
+        System.out.println("------------------------------------------------------------------------------");
+        System.out.printf("명령어 실행 중 오류 발생: %s - %s\n", e.getClass().getName(), e.getMessage());
+        System.out.println("------------------------------------------------------------------------------");
+      }
         System.out.println();
       }
   }
 
   public void add() {
 
-    System.out.println("[상품 주문 > 등록]");
+    System.out.println("【토끼마켓 / 상품 주문 / 주문 하기】");
 
     Order o = new Order();
 
@@ -92,12 +94,12 @@ public class OrderHandler<E> {
     System.out.println();
   }
 
-  public void list() {
-    System.out.println("[상품 주문 > 목록]");
+  public void list() throws CloneNotSupportedException {
+    System.out.println("【토끼마켓 / 상품 주문 / 주문 목록 보기】");
 
-    Object[] list = orderList.toArray();
-    for(Object obj : list) {
-      Order o = (Order)obj;
+    Iterator<Order> iterator = orderList.iterator();
+    while (iterator.hasNext()) {
+      Order o = iterator.next();
       System.out.printf("주문 번호: %d 회원 아이디: %s\n주문 날짜: %s\n"
           , o.getNumber(), o.getMemberId(), o.getRegisteredDate());
       System.out.println("----------------------------------------------------------");
@@ -107,9 +109,8 @@ public class OrderHandler<E> {
     System.out.println();
   }
 
-
   public void detail() {
-    System.out.println("[상품 주문 > 상세 보기]");
+    System.out.println("【토끼마켓 / 상품 주문 / 주문 상세 보기】");
 
     Order order = findByNo(Prompt.inputInt("번호? "));
 
@@ -124,27 +125,22 @@ public class OrderHandler<E> {
       System.out.printf("총 가격: %d원\n", order.getTotalPrice());
       System.out.println("-------------------------------------------------------------");
       return;
-
     }
   }
 
   public void update() {
-    System.out.println("[상품 주문 > 수정]");
+    System.out.println("【토끼마켓 / 상품 주문 / 주문 변경/수정】");
 
     Order order = findByNo(Prompt.inputInt("번호? "));
     if(order == null) {
-
       System.out.println("해당 번호의 주문이 없습니다.");
       System.out.println();
-
     }else {
-
       String Useditems = UseditemHandler.inputUseditems(String.format("주문할 상품(%s)?(완료: 빈문자열)",order.getUseditems()));
-
       String request = Prompt.inputString(String.format("요청사항(%s)? ",order.getRequest()));
-
-      String userChoice = Prompt.inputString("정말 수정하시겠습니까?(y/N) ");
-      if(userChoice.equalsIgnoreCase("y")) {
+      String userChoice = Prompt.inputString("정말 수정하시겠습니까?(Y/N) ");
+      
+      if(userChoice.equalsIgnoreCase("Y")) {
         order.setUseditems(Useditems);
         order.setRequest(request);
         order.setRegisteredDate(new Date(System.currentTimeMillis()));
@@ -159,23 +155,23 @@ public class OrderHandler<E> {
   }
 
   public void delete() {
-    System.out.println("[상품 주문 > 삭제]");
+    System.out.println("【토끼마켓 / 상품 주문 / 주문 취소】");
 
     int no = Prompt.inputInt("번호? ");
-    int index = indexOf(no);
-    if(index == -1) {
+    Order order = findByNo(no);
+    if(order == null) {
       System.out.println("해당 번호의 주문이 없습니다.");
       System.out.println();
 
     }else {
-      String userChoice = Prompt.inputString("정말 삭제하시겠습니까?(y/N) ");
+      String userChoice = Prompt.inputString("정말 삭제하시겠습니까?(Y/N) ");
 
-      if(userChoice.equalsIgnoreCase("y")) {
-        orderList.delete(index);
+      if(userChoice.equalsIgnoreCase("Y")) {
+        orderList.remove(order);
         System.out.println("주문 삭제를 완료하였습니다.");
         System.out.println();
       }else {
-        orderList.delete(no);
+        orderList.remove(no);
         System.out.println("주문 삭제를 취소하였습니다.");
         System.out.println();
         return;
@@ -196,21 +192,9 @@ public class OrderHandler<E> {
     }
   }
 
-  private int indexOf(int orderNo) {
-    Object[] list = orderList.toArray();
-    for(int i = 0; i < list.length; i++) {
-      Order o = (Order)list[i];
-      if(o.getNumber() == orderNo) {
-        return i;
-      }
-    }
-    return -1;
-  }
-
   private Order findByNo(int orderNo) {
-    Object[] list = orderList.toArray();
-    for(Object obj : list) {
-      Order o = (Order)obj;
+    Order[] list = orderList.toArray(new Order[orderList.size()]);
+    for(Order o : list) {
       if(o.getNumber() == orderNo) {
         return o;
       }
