@@ -3,30 +3,42 @@ package com.kyung.pms;
 import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.LinkedList;
-import com.kyung.pms.handler.BoardHandler;
-import com.kyung.pms.handler.MemberHandler;
-import com.kyung.pms.handler.OrderHandler;
-import com.kyung.pms.handler.UseditemHandler;
-import com.kyung.pms.handler.DeliverHandler;
+import com.kyung.pms.handler.BoardServiceExchangeReturn;
+import com.kyung.pms.handler.BoardServiceUseditem;
+import com.kyung.pms.handler.BoardServiceReview;
+import com.kyung.pms.handler.BoardServiceDeliver;
+import com.kyung.pms.handler.MemberService;
+import com.kyung.pms.handler.MemberValidatorHandler;
+import com.kyung.pms.handler.OrderService;
+import com.kyung.pms.handler.OrderValidatorHandler;
+import com.kyung.pms.handler.UseditemService;
+import com.kyung.pms.handler.UseditemValidatorHandler;
+import com.kyung.pms.handler.DeliverService;
 import com.kyung.util.Prompt;
 
-
+// 2021-02-26 Update
 public class App {
 
-  static BoardHandler<String> BoardUseditem = new BoardHandler<>();
-  static BoardHandler<String> BoardDeliver = new BoardHandler<>();
-  static BoardHandler<String> BoardExchangeReturn = new BoardHandler<>();
-  static BoardHandler<String> BoardReview = new BoardHandler<>();
+  static BoardServiceUseditem boardServiceUseditem = new BoardServiceUseditem();
+  static BoardServiceReview boardServiceReview = new BoardServiceReview();
+  static BoardServiceDeliver boardServiceDeliver = new BoardServiceDeliver();
+  static BoardServiceExchangeReturn boardServiceExchangeReturn = new BoardServiceExchangeReturn();
 
   static ArrayDeque<String> commandStack = new ArrayDeque<>();
   static LinkedList<String> commandQueue = new LinkedList<>();
 
   public static void main(String[] args) throws CloneNotSupportedException{
 
-    MemberHandler<String> memberHandler = new MemberHandler<>();
-    UseditemHandler<String> UseditemHandler = new UseditemHandler<>();
-    OrderHandler<String> orderHandler = new OrderHandler<>(memberHandler, UseditemHandler);
-    DeliverHandler<String> DeliverHandler = new DeliverHandler<>(memberHandler, orderHandler);
+    MemberService memberService = new MemberService();
+    MemberValidatorHandler memberValidatorHandler = new MemberValidatorHandler(memberService.getMemberList());
+
+    UseditemService UseditemService = new UseditemService();
+    UseditemValidatorHandler UseditemValidatorHandler = new UseditemValidatorHandler(UseditemService.getUseditemList());
+
+    OrderService orderService = new OrderService(memberValidatorHandler, UseditemValidatorHandler);
+    OrderValidatorHandler orderValidatorHandler = new OrderValidatorHandler(orderService.getOrderList());
+
+    DeliverService DeliverService = new DeliverService(memberValidatorHandler, orderValidatorHandler);
 
     loop: 
       while(true) {
@@ -47,41 +59,32 @@ public class App {
         commandQueue.offer(command);
 
         switch(command) {
-
           case "1" :
-            memberHandler.service(command);
+            memberService.menu();
             break;
-
           case "2" :
-            UseditemHandler.service();
+            UseditemService.menu();
             break;
-
           case "3" :
-            orderHandler.service();
+            orderService.menu();
             break;
-
           case "4" :
-            DeliverHandler.service();
+            DeliverService.menu();
             break;
-
           case "5" :
             chooseBoard();
             break;
-
           case "0" :
             System.out.println("이용해주셔서 감사합니다.\n 더 나은 서비스로 보답하겠습니다.");
             break loop;
-
           case "history" : 
             printCommandHistory(commandStack.iterator());
             System.out.println();
             break;
-
           case "history2" : 
             printCommandHistory(commandQueue.iterator());
             System.out.println();
             break;
-
           default :
             System.out.println("번호를 잘못 입력하신것 같습니다. 0번부터 5번까지 다시 입력해주시겠어요?");
             System.out.println();
@@ -107,28 +110,27 @@ public class App {
 
         switch(command) {
           case "1" :
-            BoardUseditem.service("상품 문의하기");
-
+            boardServiceUseditem.menu("상품 문의");
+            break;
           case "2" :
-            BoardDeliver.service("배송 문의하기");
-
+            boardServiceDeliver.menu("배송 문의");
+            break;
           case "3" :
-            BoardExchangeReturn.service("교환/반품 문의하기");
-
+            boardServiceExchangeReturn.menu("교환/반품 문의");
+            break;
           case "4" :
-            BoardReview.service("리뷰 남기기");
-
+            boardServiceReview.menu("리뷰");
+            break;
           case "0" :
-            System.out.println("전화면으로 돌아갑니다!");
+            System.out.println("메인으로 돌아갑니다.");
             break loop;
-
           default :
             System.out.println("잘못된 메뉴 번호 입니다! 다시 입력해 주시겠어요?");
-
         }
         System.out.println();
       }
   }
+
   private static void printCommandHistory(Iterator<String> iterator) {
 
     int count = 0;
@@ -139,9 +141,7 @@ public class App {
         if(input.equalsIgnoreCase("q")) {
           break;
         }
-
       }
     }
   }
-
 }

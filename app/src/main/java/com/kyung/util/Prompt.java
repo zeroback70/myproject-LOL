@@ -3,6 +3,7 @@ package com.kyung.util;
 import java.sql.Date;
 import java.util.Scanner;
 
+// 2021-02-26 Update
 public class Prompt {
   static Scanner scanner = new Scanner(System.in);
   
