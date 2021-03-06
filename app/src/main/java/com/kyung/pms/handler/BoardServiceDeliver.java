@@ -1,20 +1,25 @@
 package com.kyung.pms.handler;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import com.kyung.pms.App;
 import com.kyung.pms.domain.Board;
 
 public class BoardServiceDeliver {
 
-  static ArrayList<Board> boardDeliverList = new ArrayList<>(); //상품 문의
-
-  BoardAddHandler boardAddHandler = new BoardAddHandler(boardDeliverList);
-  BoardListHandler boardListHandler = new BoardListHandler(boardDeliverList);
-  BoardDetailHandler boardDetailHandler = new BoardDetailHandler(boardDeliverList);
-  BoardUpdateHandler boardUpdateHandler = new BoardUpdateHandler(boardDeliverList);
-  BoardDeleteHandler boardDeleteHandler = new BoardDeleteHandler(boardDeliverList);
+  static List<Board> boardDeliverList = new ArrayList<>(); //상품 문의
 
   public void menu(String choice) throws CloneNotSupportedException {
+
+    HashMap<String,Command> commandMap = new HashMap<>();
+
+    commandMap.put("1", new BoardAddHandler(boardDeliverList));
+    commandMap.put("2", new BoardListHandler(boardDeliverList));
+    commandMap.put("3", new BoardDetailHandler(boardDeliverList));
+    commandMap.put("4", new BoardUpdateHandler(boardDeliverList));
+    commandMap.put("5", new BoardDeleteHandler(boardDeliverList));
 
     while(true) {
       System.out.printf("[메인 > 게시판 > %s]\n", choice);
@@ -28,31 +33,20 @@ public class BoardServiceDeliver {
 
       String command = com.kyung.util.Prompt.inputString("명령> ");
       System.out.println();
+
       try {
         switch(command) {
-          case "1" :
-            boardAddHandler.service();
-            break;
-          case "2" :
-            boardListHandler.service();
-            break;
-          case "3" :
-            boardDetailHandler.service();
-            break;
-          case "4" :
-            boardUpdateHandler.service();
-            break;
-          case "5" :
-            boardDeleteHandler.service();
-            break;
           case "0" :
             System.out.println("게시판으로 돌아갑니다.");
             System.out.println();
             App.chooseBoard();
           default :
-            System.out.println("잘못된 메뉴 번호 입니다.");
-            System.out.println();
-
+            Command commandHandler = commandMap.get(command);
+            if(commandHandler == null) {
+              System.out.println("실행할 수 없는 메뉴 번호 입니다.");
+            } else {
+              commandHandler.service();
+            }
         }
       }catch(Exception e) {
         System.out.println("------------------------------------------------------------------------------");
@@ -62,4 +56,23 @@ public class BoardServiceDeliver {
       System.out.println();
     }
   }
+  static void saveBoards() {
+    try(FileOutputStream out = new FileOutputStream("boardsOfDeliver.data")) {
+      int size = boardDeliverList.size();
+      out.write(size >> 8);
+      out.write(size);
+
+      for(Board b : boardDeliverList) {
+        out.write(b.getNumber() >> 24);
+        out.write(b.getNumber() >> 16);
+        out.write(b.getNumber() >> 8);
+        out.write(b.getNumber());
+      }
+
+    } catch (Exception e) {
+
+    }
+  }
 }
+
+  // 코드 향후에 추가!

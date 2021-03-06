@@ -1,5 +1,6 @@
 package com.kyung.pms.handler;
 
+import java.util.HashMap;
 import java.util.ArrayList;
 import com.kyung.pms.domain.Order;
 
@@ -10,22 +11,23 @@ public  class OrderService {
     return orderList;
   }
   private MemberValidatorHandler memberValidatorHandler;
-  private UseditemValidatorHandler useditemValidatorHandler;
+  private UseditemValidatorHandler UseditemValidatorHandler;
 
-  public OrderService(MemberValidatorHandler memberValidatorHandler, UseditemValidatorHandler useditemValidatorHandler) {
+  public OrderService(MemberValidatorHandler memberValidatorHandler, UseditemValidatorHandler UseditemValidatorHandler) {
     this.memberValidatorHandler = memberValidatorHandler;
-    this.useditemValidatorHandler = useditemValidatorHandler;
+    this.UseditemValidatorHandler = UseditemValidatorHandler;
   }
 
-
-
-  OrderAddHandler orderAddHandler = new OrderAddHandler(memberValidatorHandler, useditemValidatorHandler, orderList);
-  OrderListHandler orderListHandler = new OrderListHandler(orderList);
-  OrderDetailHandler orderDetailHandler = new OrderDetailHandler(orderList);
-  OrderUpdateHandler orderUpdateHandler = new OrderUpdateHandler(memberValidatorHandler, useditemValidatorHandler, orderList);
-  OrderDeleteHandler orderDeleteHandler = new OrderDeleteHandler(orderList);
-
   public void menu() {
+
+    HashMap<String,Command> commandMap = new HashMap<>();
+
+    commandMap.put("1", new OrderAddHandler(memberValidatorHandler, UseditemValidatorHandler, orderList));
+    commandMap.put("2", new OrderListHandler(orderList));
+    commandMap.put("3", new OrderDetailHandler(orderList));
+    commandMap.put("4", new OrderUpdateHandler(memberValidatorHandler, UseditemValidatorHandler, orderList));
+    commandMap.put("5", new OrderDeleteHandler(orderList));
+
 
     loop:
       while(true) {
@@ -40,31 +42,20 @@ public  class OrderService {
 
         String command = com.kyung.util.Prompt.inputString("명령> ");
         System.out.println();
+        
         try {
           switch(command) {
-            case "1" :
-              orderAddHandler.service();
-              break;
-            case "2" :
-              orderListHandler.service();
-              break;
-            case "3" :
-              orderDetailHandler.service();
-              break;
-            case "4" :
-              orderUpdateHandler.service();
-              break;
-            case "5" :
-              orderDeleteHandler.service();
-              break;
             case "0" :
               System.out.println("메인으로 돌아갑니다.");
               System.out.println();
               break loop;
             default :
-              System.out.println("잘못된 메뉴 번호 입니다.");
-              System.out.println();
-
+              Command commandHandler = commandMap.get(command);
+              if(commandHandler == null) {
+                System.out.println("실행할 수 없는 메뉴 번호 입니다.");
+              }else {
+                commandHandler.service();
+              }
           }
         }catch(Exception e){
           System.out.println("------------------------------------------------------------------------------");
@@ -74,5 +65,4 @@ public  class OrderService {
         System.out.println();
       }
   }
-
 }

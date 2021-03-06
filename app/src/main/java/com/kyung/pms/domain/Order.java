@@ -1,12 +1,16 @@
 package com.kyung.pms.domain;
 
+import java.io.Serializable;
 import java.sql.Date;
 
-public class Order {
-  private String memberId;//
-  private int number;//
-  private String products;  //
-  private Date registeredDate; //  
+public class Order implements Serializable {
+
+  private static final long serialVersionUID = 1L;
+
+  private String memberId;
+  private int number;
+  private String products;
+  private Date registeredDate;
   private String request;
   private int totalPrice;
 
@@ -85,11 +89,4 @@ public class Order {
   public void setTotalPrice(int totalPrice) {
     this.totalPrice = totalPrice;
   }
-
-public void setUseditems(String inputUseditems) {
-}
-
-public Object getUseditems() {
-	return null;
-}
 }

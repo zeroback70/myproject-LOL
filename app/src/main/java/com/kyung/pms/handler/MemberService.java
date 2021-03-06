@@ -1,5 +1,6 @@
 package com.kyung.pms.handler;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import com.kyung.pms.domain.Member;
 import com.kyung.util.Prompt;
@@ -11,12 +12,6 @@ public class MemberService {
     return memberList;
   }
 
-  MemberAddHandler memberAddHandler = new MemberAddHandler(memberList);
-  MemberListHandler memberListHandler = new MemberListHandler(memberList);
-  MemberDetailHandler memberDetailHandler = new MemberDetailHandler(memberList);
-  MemberUpdateHandler memberUpdateHandler = new MemberUpdateHandler(memberList);
-  MemberDeleteHandler memberDeleteHandler = new MemberDeleteHandler(memberList);
-
   //  MemberValidatorHandler memberValidatorHandler = new MemberValidatorHandler(memberList);
   //  public MemberValidatorHandler getMemberValidatorHandler() {
   //    return memberValidatorHandler;
@@ -24,8 +19,15 @@ public class MemberService {
 
   public void menu() {
 
-    loop:
+    HashMap<String,Command> commandMap = new HashMap<>();
 
+    commandMap.put("1", new MemberAddHandler(memberList));
+    commandMap.put("2", new MemberListHandler(memberList));
+    commandMap.put("3", new MemberDetailHandler(memberList));
+    commandMap.put("4", new MemberUpdateHandler(memberList));
+    commandMap.put("5", new MemberDeleteHandler(memberList));
+
+    loop:
       while(true) {
         System.out.println("[메인 > 회원]");
         System.out.println("1. 등록");
@@ -40,28 +42,18 @@ public class MemberService {
         System.out.println();
         try {
           switch(command) {
-            case "1" :
-              memberAddHandler.service();
-              break;
-            case "2" :
-              memberListHandler.service();
-              break;
-            case "3" :
-              memberDetailHandler.service();
-              break;
-            case "4" :
-              memberUpdateHandler.service();
-              break;
-            case "5" :
-              memberDeleteHandler.service();
-              break;
             case "0" :
               System.out.println("메인으로 돌아갑니다.");
               System.out.println();
               break loop;
             default :
-              System.out.println("잘못된 메뉴 번호 입니다.");
-              System.out.println();
+              Command commandHandler = commandMap.get(command);
+
+              if(commandHandler == null) {
+                System.out.println("실행할 수 없는 메뉴 번호 입니다.");
+              }else {
+                commandHandler.service();
+              }
 
           }
         }catch(Exception e) {
@@ -117,4 +109,5 @@ public class MemberService {
     }
     return null;
   }
+
 }

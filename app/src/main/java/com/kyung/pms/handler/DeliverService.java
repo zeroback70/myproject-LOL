@@ -1,5 +1,6 @@
 package com.kyung.pms.handler;
 
+import java.util.HashMap;
 import java.util.ArrayList;
 import com.kyung.pms.domain.Deliver;
 
@@ -14,14 +15,15 @@ public class DeliverService {
     this.orderValidatorHandler = orderValidatorHandler;
   }
 
-  DeliverAddHandler DeliverAddHandler = new DeliverAddHandler(memberValidatorHandler, orderValidatorHandler, DeliverList);
-  DeliverListHandler DeliverListHandler = new DeliverListHandler(DeliverList);
-  DeliverDetailHandler DeliverDetailHandler = new DeliverDetailHandler(DeliverList);
-  DeliverUpdateHandler DeliverUpdateHandler = new DeliverUpdateHandler(memberValidatorHandler, orderValidatorHandler, DeliverList);
-  DeliverDeleteHandler DeliverDeleteHandler = new DeliverDeleteHandler(DeliverList);
-
-
   public void menu() throws CloneNotSupportedException {
+
+    HashMap<String,Command> commandMap = new HashMap<>();
+
+    commandMap.put("1", new DeliverAddHandler(memberValidatorHandler, orderValidatorHandler, DeliverList));
+    commandMap.put("2", new DeliverListHandler(DeliverList));
+    commandMap.put("3", new DeliverDetailHandler(DeliverList));
+    commandMap.put("4", new DeliverUpdateHandler(memberValidatorHandler, orderValidatorHandler, DeliverList));
+    commandMap.put("5", new DeliverDeleteHandler(DeliverList));
 
     loop:
       while(true) {
@@ -38,29 +40,17 @@ public class DeliverService {
         System.out.println();
         try {
           switch(command) {
-            case "1" :
-              DeliverAddHandler.service();
-              break;
-            case "2" :
-              DeliverListHandler.service();
-              break;
-            case "3" :
-              DeliverDetailHandler.service();
-              break;
-            case "4" :
-              DeliverUpdateHandler.service();
-              break;
-            case "5" :
-              DeliverDeleteHandler.service();
-              break;
             case "0" :
               System.out.println("메인으로 돌아갑니다.");
               System.out.println();
               break loop;
             default :
-              System.out.println("잘못된 메뉴 번호 입니다.");
-              System.out.println();
-
+              Command commandHandler = commandMap.get(command);
+              if(commandHandler == null) {
+                System.out.println("실행할 수 없는 메뉴 번호 입니다.");
+              }else {
+                commandHandler.service();
+              }
           }
         }catch(Exception e) {
           System.out.println("------------------------------------------------------------------------------");

@@ -1,8 +1,12 @@
 package com.kyung.pms.domain;
 
+import java.io.Serializable;
 import java.sql.Date;
 
-public class Member {
+public class Member implements Serializable {
+
+  private static final long serialVersionUID = 1L;
+
   private int number;
   private String name;
   private String id;
@@ -100,5 +104,4 @@ public class Member {
   public void setJoinDate(Date joinDate) {
     this.joinDate = joinDate;
   }
-
 }

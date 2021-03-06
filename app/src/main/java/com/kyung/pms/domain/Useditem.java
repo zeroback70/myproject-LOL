@@ -1,9 +1,14 @@
 package com.kyung.pms.domain;
 
-public class Useditem {
-  private int number;//
-  private String name;//
-  private int price;//
+import java.io.Serializable;
+
+public class Useditem implements Serializable {
+
+  private static final long serialVersionUID = 1L;
+
+  private int number;
+  private String name;
+  private int price;
   private String photo;
 
   @Override
@@ -63,6 +68,4 @@ public class Useditem {
   public void setPhoto(String photo) {
     this.photo = photo;
   }
-
-
 }

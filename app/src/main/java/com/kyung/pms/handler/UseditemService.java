@@ -1,5 +1,6 @@
 package com.kyung.pms.handler;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import com.kyung.pms.domain.Useditem;
 import com.kyung.util.Prompt;
@@ -12,13 +13,15 @@ public class UseditemService {
     return UseditemList;
   }
 
-  UseditemAddHandler UseditemAddHandler = new UseditemAddHandler(UseditemList);
-  UseditemListHandler UseditemListHandler = new UseditemListHandler(UseditemList);
-  UseditemDetailHandler UseditemDetailHandler = new UseditemDetailHandler(UseditemList);
-  UseditemUpdateHandler UseditemUpdateHandler = new UseditemUpdateHandler(UseditemList);
-  UseditemDeleteHandler UseditemDeleteHandler = new UseditemDeleteHandler(UseditemList);
-
   public void menu() {
+
+    HashMap<String,Command> commandMap = new HashMap<>();
+
+    commandMap.put("1", new UseditemAddHandler(UseditemList));
+    commandMap.put("2", new UseditemListHandler(UseditemList));
+    commandMap.put("3", new UseditemDetailHandler(UseditemList));
+    commandMap.put("4", new UseditemUpdateHandler(UseditemList));
+    commandMap.put("5", new UseditemDeleteHandler(UseditemList));
 
     loop:
       while(true) {
@@ -35,29 +38,17 @@ public class UseditemService {
         System.out.println();
         try {
           switch(command) {
-            case "1" :
-              UseditemAddHandler.service();
-              break;
-            case "2" :
-              UseditemListHandler.service();
-              break;
-            case "3" :
-              UseditemDetailHandler.service();
-              break;
-            case "4" :
-              UseditemUpdateHandler.service();
-              break;
-            case "5" :
-              UseditemDeleteHandler.service();
-              break;
             case "0" :
               System.out.println("메인으로 돌아갑니다.");
               System.out.println();
               break loop;
             default :
-              System.out.println("잘못된 메뉴 번호 입니다.");
-              System.out.println();
-
+              Command commandHandler = commandMap.get(command);
+              if(commandHandler == null) {
+                System.out.println("실행할 수 없는 메뉴 번호 입니다.");
+              }else {
+                commandHandler.service();
+              }
           }
         }catch(Exception e) {
           System.out.println("------------------------------------------------------------------------------");
