@@ -102,10 +102,10 @@ public class App {
         System.out.println("2. 배송 문의하기");
         System.out.println("3. 교환/반품 문의하기");
         System.out.println("4. 리뷰 남기기");
-        System.out.println("0. 이전 메뉴");
+        System.out.println("0. 이전 메뉴로 돌아가기");
         System.out.println();
 
-        String command = com.kyung.util.Prompt.inputString("명령> ");
+        String command = com.kyung.util.Prompt.inputString("번호 입력(0~4)>> ");
         System.out.println();
 
         switch(command) {
