@@ -16,7 +16,7 @@ import com.kyung.pms.handler.UseditemValidatorHandler;
 import com.kyung.pms.handler.DeliverService;
 import com.kyung.util.Prompt;
 
-// 2021-02-26 Update
+// 2021-03-16 Update
 public class App {
 
   static BoardServiceUseditem boardServiceUseditem = new BoardServiceUseditem();
@@ -52,7 +52,7 @@ public class App {
         System.out.println("원하시는 번호를 눌러주세요!");
         System.out.println();
 
-        String command = Prompt.inputString("번호입력(0~5)>> ");
+        String command = Prompt.inputString("번호 입력(0~5)>> ");
         System.out.println();
 
         commandStack.push(command);
@@ -75,7 +75,7 @@ public class App {
             chooseBoard();
             break;
           case "0" :
-            System.out.println("이용해주셔서 감사합니다.\n 더 나은 서비스로 보답하겠습니다.");
+            System.out.println("이용해주셔서 감사합니다! \n 더 나은 서비스로 보답하겠습니다!");
             break loop;
           case "history" : 
             printCommandHistory(commandStack.iterator());
@@ -86,7 +86,7 @@ public class App {
             System.out.println();
             break;
           default :
-            System.out.println("번호를 잘못 입력하신것 같습니다. 0번부터 5번까지 다시 입력해주시겠어요?");
+            System.out.println("번호를 잘못 입력하신것 같습니다! 0번부터 5번까지 다시 입력해주시겠어요?");
             System.out.println();
 
         }
