@@ -1,36 +1,28 @@
 package com.kyung.pms.handler;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import com.kyung.pms.App;
-import com.kyung.pms.domain.Board;
+import com.sunwoo.project.domain.Board;
 
-public class BoardServiceUseditem {
+public class BoardServiceProduct {
 
-  static List<Board> boardUseditemList; //상품 문의
-
-  static File boardsOfUseditem = new File("boardsOfUseditem.data");
+  static List<Board> boardProductList = new ArrayList<>();
 
   public void menu(String choice) {
 
-    boardUseditemList = loadObjects(boardsOfUseditem, Board.class);
-
+    loadBoards();
     HashMap<String,Command> commandMap = new HashMap<>();
 
-    commandMap.put("1", new BoardAddHandler(boardUseditemList));
-    commandMap.put("2", new BoardListHandler(boardUseditemList));
-    commandMap.put("3", new BoardDetailHandler(boardUseditemList));
-    commandMap.put("4", new BoardUpdateHandler(boardUseditemList));
-    commandMap.put("5", new BoardDeleteHandler(boardUseditemList));
+    commandMap.put("1", new BoardAddHandler(boardProductList));
+    commandMap.put("2", new BoardListHandler(boardProductList));
+    commandMap.put("3", new BoardDetailHandler(boardProductList));
+    commandMap.put("4", new BoardUpdateHandler(boardProductList));
+    commandMap.put("5", new BoardDeleteHandler(boardProductList));
 
     while(true) {
       System.out.printf("[메인 > 게시판 > %s]\n", choice);
@@ -42,24 +34,20 @@ public class BoardServiceUseditem {
       System.out.println("0. 이전 메뉴");
       System.out.println();
 
-      String command = com.kyung.util.Prompt.inputString("명령> ");
+      String command = com.sunwoo.util.Prompt.inputString("번호를 입력해주세요(0~5) >> ");
       System.out.println();
       try {
         switch(command) {
           case "0" :
             System.out.println("게시판으로 돌아갑니다.");
             System.out.println();
-            App.chooseBoard();
-            break;
-
+            return;
           default :
             Command commandHandler = commandMap.get(command);
             if(commandHandler == null) {
               System.out.println("실행할 수 없는 메뉴 번호 입니다.");
-              break;
             } else {
               commandHandler.service();
-              break;
             }
         }
       }catch(Exception e) {
@@ -67,36 +55,36 @@ public class BoardServiceUseditem {
         System.out.printf("명령어 실행 중 오류 발생: %s - %s\n", e.getClass().getName(), e.getMessage());
         System.out.println("------------------------------------------------------------------------------");
       }
-      saveObjects(boardsOfUseditem, boardUseditemList);
+      saveBoards();
       System.out.println();
     }
   }
 
-  @SuppressWarnings("unchecked")
-  static <T extends Serializable> List<T> loadObjects(File file, Class<T> dataType) {
-    try(ObjectInputStream in = new ObjectInputStream(
-        new BufferedInputStream(
-            new FileInputStream(file)))) {
+  static void loadBoards() {
+    try(BufferedReader in = new BufferedReader(new FileReader("boardsOfProduct.data"))) {
 
-      System.out.printf("파일 %s 로딩!\n", file.getName());
-      return (List<T>) in.readObject();
+      String csvStr = null;
+      while ((csvStr = in.readLine()) != null) {
+        boardProductList.add(Board.valueOfCsv(csvStr));
+      }
+      System.out.println("상품 문의 로딩!");
 
     } catch (Exception e) {
-      System.out.printf("파일 %s 로딩 중 오류 발생!\n", file.getName());
-      return new ArrayList<T>();
+      System.out.println("상품 문의 데이터 로딩 중 오류 발생!");
     }
   }
 
-  static <T extends Serializable>void saveObjects(File file, List<T> dataList) {
-    try (ObjectOutputStream out = new ObjectOutputStream(
-        new BufferedOutputStream(
-            new FileOutputStream(file)))) { 
+  static void saveBoards() {
+    try (BufferedWriter out = new BufferedWriter(new FileWriter("boardsOfProduct.data"))) { 
 
-      out.writeObject(dataList);
-      System.out.printf("파일 %s 저장!\n", file.getName());
+      for (Board b : boardProductList) {
+        out.write(b.toCsvString());
+      }
+      System.out.println("상품문의가 등록되었습니다.");
 
     } catch (Exception e) {
-      System.out.printf("파일 %s 저장 중 오류 발생!\n", file.getName());
+      System.out.println("상품문의 데이터 파일로 저장 중 오류 발생!");
+      e.printStackTrace();
     }
   }
 }

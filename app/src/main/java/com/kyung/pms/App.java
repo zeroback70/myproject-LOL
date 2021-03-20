@@ -16,7 +16,7 @@ import com.kyung.pms.handler.UseditemValidatorHandler;
 import com.kyung.pms.handler.DeliverService;
 import com.kyung.util.Prompt;
 
-// 2021-03-16 Update
+// 2021-03-21 Update
 public class App {
 
   static BoardServiceUseditem boardServiceUseditem = new BoardServiceUseditem();
@@ -93,42 +93,42 @@ public class App {
       }
   }
 
-  public static void chooseBoard() throws CloneNotSupportedException{
+  public static void chooseBoard() throws CloneNotSupportedException {
+    while(true) {
+      System.out.println("[메인 > 게시판]");
+      System.out.println("1. 상품 문의");
+      System.out.println("2. 배송 문의");
+      System.out.println("3. 교환/반품 문의");
+      System.out.println("4. 리뷰 남기기");
+      System.out.println("0. 이전 메뉴로 돌아가기");
+      System.out.println();
 
-    loop:
-      while(true) {
-        System.out.println("[메인 > 게시판]");
-        System.out.println("1. 상품 문의하기");
-        System.out.println("2. 배송 문의하기");
-        System.out.println("3. 교환/반품 문의하기");
-        System.out.println("4. 리뷰 남기기");
-        System.out.println("0. 이전 메뉴로 돌아가기");
-        System.out.println();
+      String command = com.sunwoo.util.Prompt.inputString("명령> ");
+      System.out.println();
 
-        String command = com.kyung.util.Prompt.inputString("번호 입력(0~4)>> ");
-        System.out.println();
+      switch(command) {
+        case "1" :
+          boardServiceProduct.menu("상품 문의");
+          break;
+        case "2" :
+          boardServiceShipping.menu("배송 문의");
+          break;
+        case "3" :
+          boardServiceExchangeReturn.menu("교환/반품 문의");
+          break;
+        case "4" :
+          boardServiceReview.menu("리뷰 남기기");
+          break;
+        case "0" :
+          System.out.println("메인으로 돌아갑니다.");
+          System.out.println();
+          return;
+        default :
+          System.out.println("잘못된 메뉴 번호 입니다.");
 
-        switch(command) {
-          case "1" :
-            boardServiceUseditem.menu("상품 문의");
-            break;
-          case "2" :
-            boardServiceDeliver.menu("배송 문의");
-            break;
-          case "3" :
-            boardServiceExchangeReturn.menu("교환/반품 문의");
-            break;
-          case "4" :
-            boardServiceReview.menu("리뷰");
-            break;
-          case "0" :
-            System.out.println("메인으로 돌아갑니다.");
-            break loop;
-          default :
-            System.out.println("잘못된 메뉴 번호 입니다! 다시 입력해 주시겠어요?");
-        }
-        System.out.println();
       }
+      System.out.println();
+    }
   }
 
   private static void printCommandHistory(Iterator<String> iterator) {

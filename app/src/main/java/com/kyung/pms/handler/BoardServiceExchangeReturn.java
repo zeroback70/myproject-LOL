@@ -2,7 +2,6 @@ package com.kyung.pms.handler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import com.kyung.pms.App;
 import com.kyung.pms.domain.Board;
 
 public class BoardServiceExchangeReturn {

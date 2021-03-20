@@ -2,15 +2,12 @@ package com.kyung.pms.handler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import com.kyung.pms.App;
 import com.kyung.pms.domain.Board;
 
 public class BoardServiceReview {
-
   ArrayList<Board> boardReviewList = new ArrayList<>();
 
   public void menu(String choice) throws CloneNotSupportedException {
-
     HashMap<String,Command> commandMap = new HashMap<>();
 
     commandMap.put("1", new BoardAddHandler(boardReviewList));
@@ -29,7 +26,7 @@ public class BoardServiceReview {
       System.out.println("0. 이전 메뉴");
       System.out.println();
 
-      String command = com.kyung.util.Prompt.inputString("명령> ");
+      String command = com.kyung.util.Prompt.inputString("번호를 입력해주세요(0~5) >> ");
       System.out.println();
       
       try {

@@ -4,15 +4,12 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import com.kyung.pms.App;
 import com.kyung.pms.domain.Board;
 
 public class BoardServiceDeliver {
-
-  static List<Board> boardDeliverList = new ArrayList<>(); //상품 문의
+  static List<Board> boardDeliverList = new ArrayList<>(); 
 
   public void menu(String choice) throws CloneNotSupportedException {
-
     HashMap<String,Command> commandMap = new HashMap<>();
 
     commandMap.put("1", new BoardAddHandler(boardDeliverList));
@@ -39,7 +36,6 @@ public class BoardServiceDeliver {
           case "0" :
             System.out.println("게시판으로 돌아갑니다.");
             System.out.println();
-            App.chooseBoard();
           default :
             Command commandHandler = commandMap.get(command);
             if(commandHandler == null) {

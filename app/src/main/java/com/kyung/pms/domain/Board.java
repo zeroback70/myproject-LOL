@@ -1,11 +1,9 @@
 package com.kyung.pms.domain;
 
-import java.io.Serializable;
 import java.sql.Date;
+import com.kyung.util.CsvObject;
 
-public class Board implements Serializable {
-
-  private static final long serialVersionUID = 1L;
+public class Board implements CsvObject {
 
   private int number;
   private String title;
@@ -14,6 +12,29 @@ public class Board implements Serializable {
   private Date registeredDate;
   private int viewCount;
   private int like;
+
+  @Override
+  public String toCsvString() {
+    return String.format("%d,%s,%s,%s,%s,%d\n",
+        this.getNumber(),
+        this.getTitle(),
+        this.getContent(),
+        this.getWriter(),
+        this.getRegisteredDate(),
+        this.getViewCount());
+  }
+
+  public static Board valueOfCsv(String csv) {
+    String[] fields = csv.split(",");
+    Board b = new Board();
+    b.setNumber(Integer.parseInt(fields[0]));
+    b.setTitle(fields[1]);
+    b.setContent(fields[2]);
+    b.setWriter(fields[3]);
+    b.setRegisteredDate(Date.valueOf(fields[4]));
+    b.setViewCount(Integer.parseInt(fields[5]));
+    return b;
+  }
 
   @Override
   public int hashCode() {
