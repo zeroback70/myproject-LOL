@@ -1,7 +1,10 @@
 package com.kyung.pms.handler;
 
-import java.util.HashMap;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import com.kyung.pms.domain.Order;
 
 public  class OrderService {
@@ -19,6 +22,8 @@ public  class OrderService {
   }
 
   public void menu() {
+
+    loadOrders();
 
     HashMap<String,Command> commandMap = new HashMap<>();
 
@@ -42,7 +47,6 @@ public  class OrderService {
 
         String command = com.kyung.util.Prompt.inputString("명령> ");
         System.out.println();
-        
         try {
           switch(command) {
             case "0" :
@@ -64,5 +68,99 @@ public  class OrderService {
         }
         System.out.println();
       }
+    saveOrders();
+  }
+
+  private void loadOrders() {
+    try(FileInputStream in = new FileInputStream("orders.data")) {
+      int size = in.read() << 8 | in.read();
+
+      for (int i = 0; i < size; i++) {
+        Order order = new Order();
+
+        byte[] bytes = new byte[30000];
+
+        int len = in.read() << 8 | in.read();
+        in.read(bytes, 0, len);
+        order.setMemberId(new String(bytes,0,len,"UTF-8"));
+
+        int value = in.read() << 24;
+        value += in.read() << 16;
+        value += in.read() << 8;
+        value += in.read();
+        order.setNumber(value);
+
+        len = in.read() << 8 | in.read();
+        in.read(bytes, 0, len);
+        order.setUseditems(new String(bytes, 0, len, "UTF-8"));
+
+        len = in.read() << 8 | in.read();
+        in.read(bytes, 0, len);
+        order.setRegisteredDate(Date.valueOf(new String(bytes, 0, len, "UTF-8")));
+
+        len = in.read() << 8 | in.read();
+        in.read(bytes, 0, len);
+        order.setRequest(new String(bytes, 0, len, "UTF-8"));
+
+        value = in.read() << 24;
+        value += in.read() << 16;
+        value += in.read() << 8;
+        value += in.read();
+        order.setTotalPrice(value);
+
+        orderList.add(order);
+      }
+      System.out.println("주문 데이터 로딩!");
+
+    } catch (Exception e) {
+      System.out.println("주문 데이터 로딩 중 오류 발생!");
+    }
+  }
+
+  private void saveOrders() {
+    try(FileOutputStream  out = new FileOutputStream("orders.data")) {
+
+      int size = orderList.size();
+      out.write(size >> 8);
+      out.write(size);
+
+      for (Order o : orderList) {
+
+        byte[] buf = o.getMemberId().getBytes("UTF-8");
+        out.write(buf.length >> 8);
+        out.write(buf.length);
+        out.write(buf);
+
+        out.write(o.getNumber() >> 24);
+        out.write(o.getNumber() >> 16);
+        out.write(o.getNumber() >> 8);
+        out.write(o.getNumber());
+
+        buf = o.getUseditems().getBytes("UTF-8");
+        out.write(buf.length >> 8);
+        out.write(buf.length);
+        out.write(buf);
+
+        buf = o.getRegisteredDate().toString().getBytes("UTF-8");
+        out.write(buf.length >> 8);
+        out.write(buf.length);
+        out.write(buf);
+
+        buf = o.getRequest().getBytes("UTF-8");
+        out.write(buf.length >> 8);
+        out.write(buf.length);
+        out.write(buf);
+
+        out.write(o.getTotalPrice() >> 24);
+        out.write(o.getTotalPrice() >> 16);
+        out.write(o.getTotalPrice() >> 8);
+        out.write(o.getTotalPrice());
+
+      }
+      System.out.println("주문 데이터 저장");
+
+    } catch (Exception e) {
+      System.out.println("주문 데이터 파일로 저장하는 중에 오류 발생!");
+    }
   }
 }

@@ -9,7 +9,7 @@ public class Order implements Serializable {
 
   private String memberId;
   private int number;
-  private String products;
+  private String Useditems;
   private Date registeredDate;
   private String request;
   private int totalPrice;
@@ -20,7 +20,7 @@ public class Order implements Serializable {
     int result = 1;
     result = prime * result + ((memberId == null) ? 0 : memberId.hashCode());
     result = prime * result + number;
-    result = prime * result + ((products == null) ? 0 : products.hashCode());
+    result = prime * result + ((Useditems == null) ? 0 : Useditems.hashCode());
     result = prime * result + ((registeredDate == null) ? 0 : registeredDate.hashCode());
     return result;
   }
@@ -41,10 +41,10 @@ public class Order implements Serializable {
       return false;
     if (number != other.number)
       return false;
-    if (products == null) {
-      if (other.products != null)
+    if (Useditems == null) {
+      if (other.Useditems != null)
         return false;
-    } else if (!products.equals(other.products))
+    } else if (!Useditems.equals(other.Useditems))
       return false;
     if (registeredDate == null) {
       if (other.registeredDate != null)
@@ -65,11 +65,11 @@ public class Order implements Serializable {
   public void setNumber(int number) {
     this.number = number;
   }
-  public String getProducts() {
-    return products;
+  public String getUseditems() {
+    return Useditems;
   }
-  public void setProducts(String products) {
-    this.products = products;
+  public void setUseditems(String Useditems) {
+    this.Useditems = Useditems;
   }
   public Date getRegisteredDate() {
     return registeredDate;
