@@ -15,40 +15,9 @@ public class UseditemService {
     return UseditemList;
   }
 
-  public String getPhoto() {
-    return photo;
-  }
-
-  public void setPhoto(String photo) {
-    this.photo = photo;
-  }
-
-  public int getPrice() {
-    return price;
-  }
-
-  public void setPrice(int price) {
-    this.price = price;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public int getNumber() {
-    return number;
-  }
-
-  public void setNumber(int number) {
-    this.number = number;
-  }
-
   public void menu() {
 
+    loadUseditems();
     HashMap<String,Command> commandMap = new HashMap<>();
 
     commandMap.put("1", new UseditemAddHandler(UseditemList));
@@ -60,20 +29,20 @@ public class UseditemService {
     loop:
       while(true) {
         System.out.println("[메인 > 상품]");
-        System.out.println("1. 등록");
-        System.out.println("2. 목록");
-        System.out.println("3. 상세 보기");
-        System.out.println("4. 수정");
-        System.out.println("5. 삭제");
+        System.out.println("1. 등록하기");
+        System.out.println("2. 목록 보기");
+        System.out.println("3. 상세하게 보기");
+        System.out.println("4. 수정하기");
+        System.out.println("5. 삭제하기");
         System.out.println("0. 이전 메뉴");
         System.out.println();
 
-        String command = Prompt.inputString("명령> ");
+        String command = Prompt.inputString("번호를 입력해주세요! (0~5) >> ");
         System.out.println();
         try {
           switch(command) {
             case "0" :
-              System.out.println("메인으로 돌아갑니다.");
+              System.out.println("메인으로 돌아갑니다.. ");
               System.out.println();
               break loop;
             default :
@@ -92,12 +61,8 @@ public class UseditemService {
         }
         System.out.println();
       }
+    saveUseditems();
   }
-
-  private int number;
-  private String name;
-  private int price;
-  private String photo;
 
   static void loadUseditems() {
     try(FileInputStream in = new FileInputStream("Useditems.data")){
@@ -106,6 +71,31 @@ public class UseditemService {
 
       for(int i = 0; i < size; i++) {
 
+        Useditem Useditem = new Useditem();
+        byte[] bytes = new byte[30000];
+
+        int value = in.read() << 24;
+        value += in.read() << 16;
+        value += in.read() << 8;
+        value += in.read();
+        Useditem.setNumber(value);
+
+        int len = in.read() << 8 | in.read();
+        in.read(bytes, 0, len);
+        Useditem.setName(new String(bytes, 0, len, "UTF-8"));
+
+        value = in.read() << 24;
+        value += in.read() << 16;
+        value += in.read() << 8;
+        value += in.read();
+        Useditem.setPrice(value);
+
+        len = in.read() << 8 | in.read();
+        in.read(bytes, 0, len);
+        Useditem.setPhoto(new String(bytes, 0, len, "UTF-8"));
+
+        UseditemList.add(Useditem);
+        System.out.println("상품 데이터 로딩중입니다.. ");
       }
     } catch (Exception e) {
       System.out.println("상품 데이터 로딩 중 오류 발생!");
@@ -140,10 +130,9 @@ public class UseditemService {
         out.write(bytes);
       }
 
-      System.out.println("상품 데이터 저장!");
+      System.out.println("상품 데이터를 저장했습니다!");
     } catch (Exception e) {
       System.out.println("상품 데이터 파일로 저장 중 오류 발생!");
     }
   }
-
 }
