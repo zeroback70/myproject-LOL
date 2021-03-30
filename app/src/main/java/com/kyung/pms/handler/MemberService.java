@@ -32,10 +32,10 @@ public class MemberService {
         System.out.println("[메인 > 회원]");
         System.out.println("1. 등록하기");
         System.out.println("2. 목록 보기");
-        System.out.println("3. 상세하게 보기");
+        System.out.println("3. 상세 보기");
         System.out.println("4. 수정하기");
         System.out.println("5. 삭제하기");
-        System.out.println("0. 이전 메뉴");
+        System.out.println("0. 이전 메뉴로 돌아가기");
         System.out.println();
 
         String command = com.kyung.util.Prompt.inputString("번호를 입력해주세요! (0~5) >> ");
@@ -54,6 +54,7 @@ public class MemberService {
               }else {
                 commandHandler.service();
               }
+
           }
         }catch(Exception e) {
           System.out.println("-----------------------------------------------------------------------------");
@@ -74,7 +75,7 @@ public class MemberService {
       if(findById(id) != null) {
         return id;
       }
-      System.out.println("등록된 회원이 아닙니다.");
+      System.out.println("등록된 회원이 아닙니다!");
     }
   }
 
@@ -86,7 +87,7 @@ public class MemberService {
       }else if(findById(id) != null) {
         return id;
       }
-      System.out.println("잘못된 아이디 입니다.");
+      System.out.println("잘못된 아이디 입니다!");
     }
   }
 
@@ -112,7 +113,7 @@ public class MemberService {
 
   static void loadMembers() {
 
-    try(Scanner in = new Scanner(new FileReader("members.data"))) {
+    try(Scanner in = new Scanner(new FileReader("members.csv"))) {
 
       while(true) {
         try {
@@ -133,7 +134,7 @@ public class MemberService {
           break;
         }
       }
-      System.out.println("멤버 데이터 로딩 중입니다..");
+      System.out.println("멤버 데이터 로딩중 ..");
 
     } catch (Exception e) {
 
@@ -145,10 +146,10 @@ public class MemberService {
 
   static void saveMembers() {
 
-    try(FileWriter out = new FileWriter("members.data")) {
+    try(FileWriter out = new FileWriter("members.csv")) {
 
       for (Member m : memberList) {
-        out.write(String.format("%d,%s,%s,%s,%s%s,%s,%s",
+        out.write(String.format("%d,%s,%s,%s,%s,%s,%s,%s\n",
             m.getNumber(),
             m.getName(),
             m.getId(),
@@ -159,11 +160,13 @@ public class MemberService {
             m.getJoinDate()));
 
       }
-      System.out.println("회원 데이터를 저장했습니다!");
+      System.out.println("회원 데이터 저장중 ..");
 
     } catch(Exception e) {
 
       System.out.println("회원 데이터 파일로 저장 중 오류 발생!");
+
     }
+
   }
 }
