@@ -1,7 +1,9 @@
 package com.kyung.pms.handler;
-
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+// 2021-03-31 Update
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.LinkedList;
 import com.kyung.pms.domain.Useditem;
@@ -15,9 +17,12 @@ public class UseditemService {
     return UseditemList;
   }
 
+  public UseditemService() { 
+    loadUseditems();
+  }
+
   public void menu() {
 
-    loadUseditems();
     HashMap<String,Command> commandMap = new HashMap<>();
 
     commandMap.put("1", new UseditemAddHandler(UseditemList));
@@ -31,28 +36,27 @@ public class UseditemService {
         System.out.println("[메인 > 상품]");
         System.out.println("1. 등록하기");
         System.out.println("2. 목록 보기");
-        System.out.println("3. 상세하게 보기");
+        System.out.println("3. 상세 보기");
         System.out.println("4. 수정하기");
         System.out.println("5. 삭제하기");
-        System.out.println("0. 이전 메뉴");
+        System.out.println("0. 이전 메뉴로 돌아가기");
         System.out.println();
 
-        String command = Prompt.inputString("번호를 입력해주세요! (0~5) >> ");
+        String command = Prompt.inputString("번호를 입력해주세요! (0~5) >>");
         System.out.println();
         try {
           switch(command) {
             case "0" :
-              System.out.println("메인으로 돌아갑니다.. ");
+              System.out.println("메인으로 돌아갑니다..");
               System.out.println();
               break loop;
             default :
               Command commandHandler = commandMap.get(command);
               if(commandHandler == null) {
-                System.out.println("실행할 수 없는 메뉴 번호 입니다.");
+                System.out.println("실행할 수 없는 메뉴 번호 입니다!");
               }else {
                 commandHandler.service();
               }
-
           }
         }catch(Exception e) {
           System.out.println("------------------------------------------------------------------------------");
@@ -65,72 +69,41 @@ public class UseditemService {
   }
 
   static void loadUseditems() {
-    try(FileInputStream in = new FileInputStream("Useditems.data")){
+    try(BufferedReader in = new BufferedReader(new FileReader("Useditems.csv"))){
+      String record = null;
+      while((record = in.readLine()) != null) {
+        try {
+          String[] fields = record.split(",");
+          Useditem p = new Useditem();
+          p.setNumber(Integer.parseInt(fields[0]));
+          p.setName(fields[1]);
+          p.setPrice(Integer.parseInt(fields[2]));
+          p.setPhoto(fields[3]);
 
-      int size = in.read() << 8 | in.read();
-
-      for(int i = 0; i < size; i++) {
-
-        Useditem Useditem = new Useditem();
-        byte[] bytes = new byte[30000];
-
-        int value = in.read() << 24;
-        value += in.read() << 16;
-        value += in.read() << 8;
-        value += in.read();
-        Useditem.setNumber(value);
-
-        int len = in.read() << 8 | in.read();
-        in.read(bytes, 0, len);
-        Useditem.setName(new String(bytes, 0, len, "UTF-8"));
-
-        value = in.read() << 24;
-        value += in.read() << 16;
-        value += in.read() << 8;
-        value += in.read();
-        Useditem.setPrice(value);
-
-        len = in.read() << 8 | in.read();
-        in.read(bytes, 0, len);
-        Useditem.setPhoto(new String(bytes, 0, len, "UTF-8"));
-
-        UseditemList.add(Useditem);
-        System.out.println("상품 데이터 로딩중입니다.. ");
+          UseditemList.add(p);
+          System.out.println("상품 데이터 로딩중 ..");
+        } catch (Exception e) {
+          break;
+        }
       }
-    } catch (Exception e) {
+    }catch (Exception e) {
       System.out.println("상품 데이터 로딩 중 오류 발생!");
     }
   }
 
   static void saveUseditems() {
-    try(FileOutputStream out = new FileOutputStream("Useditems.data")) {
+    try(BufferedWriter out = new BufferedWriter(new FileWriter("Useditems.csv"))) {
 
-      out.write(UseditemList.size() >> 8);
-      out.write(UseditemList.size());
-
-      for (Useditem Useditem : UseditemList) {
-        out.write(Useditem.getNumber() >> 24);
-        out.write(Useditem.getNumber() >> 16);
-        out.write(Useditem.getNumber() >> 8);
-        out.write(Useditem.getNumber());
-
-        byte[] bytes = Useditem.getName().getBytes("UTF-8");
-        out.write(bytes.length >> 8);
-        out.write(bytes.length);
-        out.write(bytes);
-
-        out.write(Useditem.getPrice() >> 24);
-        out.write(Useditem.getPrice() >> 16);
-        out.write(Useditem.getPrice() >> 8);
-        out.write(Useditem.getPrice());
-
-        bytes = Useditem.getPhoto().getBytes("UTF-8");
-        out.write(bytes.length >> 8);
-        out.write(bytes.length);
-        out.write(bytes);
+      for (Useditem p : UseditemList) {
+        out.write(String.format("%d,%s,%d,%s",
+            p.getNumber(),
+            p.getName(),
+            p.getPrice(),
+            p.getPhoto()
+            ));
       }
 
-      System.out.println("상품 데이터를 저장했습니다!");
+      System.out.println("상품 데이터 저장중 ..");
     } catch (Exception e) {
       System.out.println("상품 데이터 파일로 저장 중 오류 발생!");
     }

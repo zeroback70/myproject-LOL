@@ -7,22 +7,22 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import com.sunwoo.project.domain.Board;
+import com.kyung.pms.domain.Board;
 
-public class BoardServiceProduct {
+public class BoardServiceUseditem {
 
-  static List<Board> boardProductList = new ArrayList<>();
+  static List<Board> boardUseditemList = new ArrayList<>();
 
   public void menu(String choice) {
 
     loadBoards();
     HashMap<String,Command> commandMap = new HashMap<>();
 
-    commandMap.put("1", new BoardAddHandler(boardProductList));
-    commandMap.put("2", new BoardListHandler(boardProductList));
-    commandMap.put("3", new BoardDetailHandler(boardProductList));
-    commandMap.put("4", new BoardUpdateHandler(boardProductList));
-    commandMap.put("5", new BoardDeleteHandler(boardProductList));
+    commandMap.put("1", new BoardAddHandler(boardUseditemList));
+    commandMap.put("2", new BoardListHandler(boardUseditemList));
+    commandMap.put("3", new BoardDetailHandler(boardUseditemList));
+    commandMap.put("4", new BoardUpdateHandler(boardUseditemList));
+    commandMap.put("5", new BoardDeleteHandler(boardUseditemList));
 
     while(true) {
       System.out.printf("[메인 > 게시판 > %s]\n", choice);
@@ -34,7 +34,7 @@ public class BoardServiceProduct {
       System.out.println("0. 이전 메뉴");
       System.out.println();
 
-      String command = com.sunwoo.util.Prompt.inputString("번호를 입력해주세요(0~5) >> ");
+      String command = com.kyung.util.Prompt.inputString("번호를 입력해주세요(0~5) >> ");
       System.out.println();
       try {
         switch(command) {
@@ -61,11 +61,11 @@ public class BoardServiceProduct {
   }
 
   static void loadBoards() {
-    try(BufferedReader in = new BufferedReader(new FileReader("boardsOfProduct.data"))) {
+    try(BufferedReader in = new BufferedReader(new FileReader("boardsOfUseditem.data"))) {
 
       String csvStr = null;
       while ((csvStr = in.readLine()) != null) {
-        boardProductList.add(Board.valueOfCsv(csvStr));
+        boardUseditemList.add(Board.valueOfCsv(csvStr));
       }
       System.out.println("상품 문의 로딩!");
 
@@ -75,9 +75,9 @@ public class BoardServiceProduct {
   }
 
   static void saveBoards() {
-    try (BufferedWriter out = new BufferedWriter(new FileWriter("boardsOfProduct.data"))) { 
+    try (BufferedWriter out = new BufferedWriter(new FileWriter("boardsOfUseditem.data"))) { 
 
-      for (Board b : boardProductList) {
+      for (Board b : boardUseditemList) {
         out.write(b.toCsvString());
       }
       System.out.println("상품문의가 등록되었습니다.");

@@ -21,7 +21,7 @@ public class OrderDetailHandler extends AbstractOrderHandler {
       System.out.println();
     }else {
       System.out.printf("회원 아이디: %s\n", order.getMemberId());
-      System.out.printf("주문한 상품: %s\n", order.getProducts());
+      System.out.printf("주문한 상품: %s\n", order.getUseditems());
       System.out.printf("주문 날짜: %s\n", order.getRegisteredDate());
       System.out.printf("요청사항: %s\n", order.getRequest());
       System.out.printf("총 가격: %d원\n", order.getTotalPrice());

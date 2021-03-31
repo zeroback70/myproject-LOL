@@ -1,5 +1,5 @@
 package com.kyung.pms.handler;
-
+// 2021-03-31 Update
 import java.sql.Date;
 import java.util.List;
 import com.kyung.pms.domain.Order;
@@ -7,27 +7,26 @@ import com.kyung.util.Prompt;
 
 public class OrderUpdateHandler extends AbstractOrderHandler {
 
-    private UseditemValidatorHandler useditemValidatorHandler;
+  private UseditemValidatorHandler UseditemValidatorHandler;
 
-    public OrderUpdateHandler(MemberValidatorHandler memberValidatorHandler,
-            UseditemValidatorHandler useditemValidatorHandler, List<Order> orderList) {
-        super(orderList);
-        this.useditemValidatorHandler = useditemValidatorHandler;
+  public OrderUpdateHandler(UseditemValidatorHandler UseditemValidatorHandler, List<Order> orderList){
+    super(orderList);
+    this.UseditemValidatorHandler = UseditemValidatorHandler;
   }
 
   @Override
   public void service() {
-    System.out.println("[메인 > 주문 > 수정]");
+    System.out.println("[메인 > 주문 > 수정하기]");
 
     Order order = findByNo(Prompt.inputInt("번호? "));
     if(order == null) {
 
-      System.out.println("해당 번호의 주문이 없습니다.");
+      System.out.println("해당 번호의 주문이 없습니다!");
       System.out.println();
 
     }else {
 
-      String Useditems = useditemValidatorHandler.inputUseditems(String.format("주문할 상품(%s)?(완료: 빈문자열)",order.getUseditems()));
+      String Useditems = UseditemValidatorHandler.inputUseditems(String.format("주문할 상품(%s)?(완료: 빈문자열)",order.getUseditems()));
 
       String request = Prompt.inputString(String.format("요청사항(%s)? ",order.getRequest()));
 

@@ -16,7 +16,7 @@ import com.kyung.pms.handler.UseditemValidatorHandler;
 import com.kyung.pms.handler.DeliverService;
 import com.kyung.util.Prompt;
 
-// 2021-03-21 Update
+// 2021-03-31 Update
 public class App {
 
   static BoardServiceUseditem boardServiceUseditem = new BoardServiceUseditem();
@@ -103,15 +103,15 @@ public class App {
       System.out.println("0. 이전 메뉴로 돌아가기");
       System.out.println();
 
-      String command = com.sunwoo.util.Prompt.inputString("명령> ");
+      String command = com.kyung.util.Prompt.inputString("명령> ");
       System.out.println();
 
       switch(command) {
         case "1" :
-          boardServiceProduct.menu("상품 문의");
+          boardServiceUseditem.menu("상품 문의");
           break;
         case "2" :
-          boardServiceShipping.menu("배송 문의");
+          boardServiceDeliver.menu("배송 문의");
           break;
         case "3" :
           boardServiceExchangeReturn.menu("교환/반품 문의");

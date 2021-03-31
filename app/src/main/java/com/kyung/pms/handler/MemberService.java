@@ -1,13 +1,13 @@
 package com.kyung.pms.handler;
-
+// 2021-03-31 Update
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.sql.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Scanner;
 import com.kyung.pms.domain.Member;
-import com.kyung.util.Prompt;
 
 public class MemberService {
 
@@ -16,9 +16,16 @@ public class MemberService {
     return memberList;
   }
 
+  MemberValidatorHandler memberValidatorHandler = new MemberValidatorHandler(memberList);
+  public MemberValidatorHandler getMemberValidatorHandler() {
+    return memberValidatorHandler;
+  }
+  public MemberService() {
+    loadMembers();
+  }
+
   public void menu() {
 
-    loadMembers();
     HashMap<String,Command> commandMap = new HashMap<>();
 
     commandMap.put("1", new MemberAddHandler(memberList));
@@ -35,22 +42,22 @@ public class MemberService {
         System.out.println("3. 상세 보기");
         System.out.println("4. 수정하기");
         System.out.println("5. 삭제하기");
-        System.out.println("0. 이전 메뉴로 돌아가기");
+        System.out.println("0. 이전 메뉴");
         System.out.println();
 
-        String command = com.kyung.util.Prompt.inputString("번호를 입력해주세요! (0~5) >> ");
+        String command = com.kyung.util.Prompt.inputString("번호를 입력해주세요! (0~5) >>  ");
         System.out.println();
         try {
           switch(command) {
             case "0" :
-              System.out.println("메인으로 돌아갑니다.");
+              System.out.println("메인으로 돌아갑니다..");
               System.out.println();
               break loop;
             default :
               Command commandHandler = commandMap.get(command);
 
               if(commandHandler == null) {
-                System.out.println("실행할 수 없는 메뉴 번호 입니다.");
+                System.out.println("실행할 수 없는 메뉴 번호 입니다!");
               }else {
                 commandHandler.service();
               }
@@ -66,58 +73,13 @@ public class MemberService {
     saveMembers();
   }
 
-  String inputMemberId(){
-    while(true) {
-      String id = Prompt.inputString("회원 아이디(enter(취소)): ");
-      if(id.equals("")) {
-        return null;
-      }
-      if(findById(id) != null) {
-        return id;
-      }
-      System.out.println("등록된 회원이 아닙니다!");
-    }
-  }
-
-  String inputMember(String promptTitle) {
-    while(true) {
-      String id = Prompt.inputString(promptTitle);
-      if(id.length() == 0) {
-        return null;
-      }else if(findById(id) != null) {
-        return id;
-      }
-      System.out.println("잘못된 아이디 입니다!");
-    }
-  }
-
-  protected Member findByNo(int memberNo) {
-    Member[] list = memberList.toArray(new Member[memberList.size()]);
-    for(Member m : list) {
-      if(m.getNumber() == memberNo) {
-        return m;
-      }
-    }
-    return null;
-  }
-
-  private Member findById(String id) {
-    Member[] list = memberList.toArray(new Member[memberList.size()]);
-    for(Member m : list) {
-      if(m.getId().equals(id)) {
-        return m;
-      }
-    }
-    return null;
-  }
-
   static void loadMembers() {
 
-    try(Scanner in = new Scanner(new FileReader("members.csv"))) {
+    try(BufferedReader in = new BufferedReader(new FileReader("members.csv"))) {
 
       while(true) {
         try {
-          String record = in.nextLine();
+          String record = in.readLine();
           String[] fields = record.split(",");
           Member m = new Member();
           m.setNumber(Integer.parseInt(fields[0]));
@@ -135,18 +97,14 @@ public class MemberService {
         }
       }
       System.out.println("멤버 데이터 로딩중 ..");
-
     } catch (Exception e) {
-
       System.out.println("멤버 데이터 로딩 중 오류 발생!");
-
     }
-
   }
 
   static void saveMembers() {
 
-    try(FileWriter out = new FileWriter("members.csv")) {
+    try(BufferedWriter out = new BufferedWriter(new FileWriter("members.csv"))) {
 
       for (Member m : memberList) {
         out.write(String.format("%d,%s,%s,%s,%s,%s,%s,%s\n",
@@ -158,15 +116,11 @@ public class MemberService {
             m.getAddress(),
             m.getEmail(),
             m.getJoinDate()));
-
       }
-      System.out.println("회원 데이터 저장중 ..");
+      System.out.println("회원 데이터 저장중..");
 
     } catch(Exception e) {
-
       System.out.println("회원 데이터 파일로 저장 중 오류 발생!");
-
     }
-
   }
 }
